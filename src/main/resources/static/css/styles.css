@@ -1,0 +1,301 @@
+
+/* Fuente elegante */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap');
+
+
+/* ----------------------------------------------------------------------- */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+section h2 {
+  font-weight: bold;
+  color: #b52e2e;
+}
+
+.card-title {
+  color: #b52e2e;
+}
+
+footer {
+  font-weight: 500;
+}
+
+
+/* Colores inspirados en Siete Sopas */
+.bg-siete-sopas {
+  background-color: #981616; /* rojo oscuro */
+}
+
+.text-siete-sopas {
+  color: #981616;
+}
+
+.btn-siete-sopas {
+  background-color: #f4c017; /* amarillo fuerte */
+  color: #000;
+  font-weight: bold;
+  border: none;
+}
+
+.btn-siete-sopas:hover {
+  background-color: #d4a911;
+  color: #000;
+}
+
+.border-siete-sopas {
+  border: 2px solid #981616;
+}
+
+/* Header estilo Siete Sopas */
+.top-navbar {
+  background-color: #FFFBEB;
+  border-bottom-left-radius: 90px;
+  border-bottom-right-radius: 90px;
+  padding: 5px 0;
+  position: relative;
+  z-index: 10;
+}
+
+
+.navbar-brand img {
+  height: 100px;
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand img:hover {
+  transform: scale(1.05);
+}
+
+.navbar-nav {
+  align-items: center;
+}
+
+.navbar-nav .nav-link {
+  font-size: 18px;
+  font-weight: 500;
+  margin-right: 25px;
+  color: #1a1a1a;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #b52e2e;
+}
+
+/* Ícono de usuario bien grande y alineado */
+.login-icon img {
+  height: 48px;
+  width: 48px;
+  margin-left: 40px;
+  transition: transform 0.3s ease;
+}
+
+.login-icon img:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive navbar content center + space */
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* CARRUSEL */
+/* CARRUSEL QUE SUBE Y SE SOLAPA DETRÁS DEL HEADER */
+.carrusel-solapado {
+  margin-top: -120px; /* sube el carrusel detrás del header */
+  position: relative;
+  z-index: 1;
+}
+
+/* CONTENIDO RESPONSIVO CENTRADO A LA IZQUIERDA */
+.custom-caption {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 480px;
+  text-align: left;
+}
+
+.custom-caption h2,
+.custom-caption p {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.custom-caption .btn {
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+/* Elimina fondo gris del texto del carrusel */
+.carousel-caption.custom-caption {
+  position: absolute;
+  top: 57%;              /* siempre centrado verticalmente */
+  left: 15%;              /* mismo margen izquierdo */
+  transform: translateY(-50%);
+  text-align: left;
+  max-width: 500px;
+  padding: 0;            /* sin padding innecesario */
+  background: none !important;
+}
+
+/* Título uniforme */
+.carousel-caption.custom-caption h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 15px;
+}
+
+/* Subtexto uniforme */
+.carousel-caption.custom-caption p {
+  font-size: 1.25rem;
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* Botón uniforme */
+.carousel-caption.custom-caption .btn {
+  font-size: 1.1rem;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Tamaño personalizado de controles */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 50px;      /* Aumenta o reduce el ancho */
+  height: 50px;     /* Aumenta o reduce el alto */
+  background-size: 70% 90%; /* para que no se pixele al crecer */
+}
+
+/* Opcional: estilos del contenedor del botón */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 70px;       /* área clicable más grande */
+  justify-content: center;
+}
+
+/* Si quieres un fondo redondo con color */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: red;       /* o cualquier color */
+  border-radius : 50%;
+  padding: 10px;
+  opacity: 0.9;
+}
+
+/*REEL DE INSTAGRAM*/
+.reel-section {
+  background-image: url('../images/img-08.jpg'); /* cambia ruta si es necesario */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+   min-height: 100vh; /* Importante: hace visible el fondo */
+  position: relative;
+}
+
+.reel-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);/* oscurecer un poco si el texto no contrasta */
+  z-index: 1;
+}
+
+.reel-section .container {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* FOOTER */
+.texto-justificado {
+  text-align: justify;
+}
+
+
+/*RESERVARCIONES.HTML*/
+
+@media (min-width: 768px) {
+  #reservaForm h5 {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+  }
+}
+
+/*LOGIN.HTML*/
+/* Estilo general del contenedor del login */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    margin-top: 5rem; /* Separación desde el top */
+    margin-bottom: 4rem;
+}
+
+/* Estilo del card */
+.login-card {
+    width: 100%;
+    max-width: 600px;
+    padding: 6rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 0.75rem;
+}
+
+/* Estilo del título */
+.login-title {
+    color: #1b5e20; /* Verde oscuro */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Estilo del subtítulo */
+.login-subtitle {
+    color: #d32f2f; /* Rojo alerta */
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+/* Botón */
+.btn-success {
+    background-color: #26802c; /* Verde oscuro */
+    border-color: #287d2e;
+}
+
+.btn-success:hover {
+    background-color: #145a17;
+    border-color: #145a17;
+}
+
+
+/*ADMIN.HTML*/
+
+body {
+    background-color: #fdfdfd;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+#filtroFecha {
+    border: 2px solid #198754;
+}
+
+
+
+
+
+

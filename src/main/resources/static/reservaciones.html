@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reservaciones - Siete Sopas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <header class="top-navbar">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="images/47sopas.png" alt="Logo Siete Sopas" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbars-rs-food">
+                    <ul class="navbar-nav me-auto ms-4">
+                        <li class="nav-item"><a class="nav-link" href="index.html">INICIO</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#menu">MENU</a></li>
+                        <li class="nav-item"><a class="nav-link" href="reservaciones.html">RESERVACIONES</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#nosotros">NOSOTROS</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contacto">CONTACTO</a></li>
+                    </ul>
+                    <a class="navbar-brand login-icon" href="login.html">
+                        <img src="images/user3.png" alt="Ícono de usuario" />
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <div class="container mt-5 mb-5">
+        <h2 class="text-center text-success mb-4 fw-bold">Reserva tu Mesa</h2>
+
+        <form id="reservaForm">
+            <div class="row">
+
+                <!-- Columna 1: Datos del cliente -->
+                <div class="col-md-6 mb-4">
+                    <h5 class="fw-bold mb-3">Datos del cliente</h5>
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre completo</label>
+                        <input type="text" class="form-control" id="nombre" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="telefono" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="correo" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="comentarios" class="form-label">Comentarios adicionales</label>
+                        <textarea class="form-control" id="comentarios" rows="3"
+                            placeholder="Ej. Celebración, silla para bebé, etc."></textarea>
+                    </div>
+                </div>
+
+                <!-- Columna 2: Detalles de la reserva -->
+                <div class="col-md-6 mb-4">
+                    <h5 class="fw-bold mb-3">Detalles de la reserva</h5>
+
+                    <div class="mb-3">
+                        <label for="fecha" class="form-label">Fecha de reserva</label>
+                        <input type="date" class="form-control" id="fecha" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="hora" class="form-label">Franja horaria</label>
+                        <select class="form-select" id="hora" required>
+                            <option value="">Selecciona un horario</option>
+                            <option value="12:00" class="slot">12:00 PM</option>
+                            <option value="13:00" class="slot">1:00 PM</option>
+                            <option value="14:00" class="slot">2:00 PM</option>
+                            <option value="20:00" class="slot">8:00 PM</option>
+                            <option value="21:00" class="slot">9:00 PM</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="personas" class="form-label">Número de personas</label>
+                        <input type="number" class="form-control" id="personas" min="1" max="10" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoMesa" class="form-label">Tipo de mesa</label>
+                        <select class="form-select" id="tipoMesa" required>
+                            <option value="">Selecciona tipo de mesa</option>
+                            <option value="comun">Mesa común</option>
+                            <option value="terraza">Mesa en terraza</option>
+                            <option value="privada">Mesa privada</option>
+                            <option value="ventana">Cerca a ventana</option>
+                        </select>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <!-- Botón fuera de las columnas -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-5">Confirmar Reserva</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background-color: #FFFBEB;" class="text-dark pt-5 pb-5">
+        <div class="container">
+            <div class="row gx-5">
+
+                <!-- Columna 1: Contacto -->
+                <div class="col-md-4 mb-4 px-4  texto-justificado">
+                    <h5 class="fw-bold">Información de contacto</h5>
+                    <div class="texto-justificado">
+                        <p>📍 Av. Ricardo Palma 205, Miraflores 15074</p>
+                        <p>
+                            <a href="https://maps.app.goo.gl/gfmHHgNU4oSQq1CS7" target="_blank"
+                                style="color: #b52e2e; text-decoration: none;">
+                                Ver en Google Maps
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Columna 2: Nosotros -->
+                <div class="col-md-4 mb-4 px-4  text-center">
+                    <h5 class="fw-bold">Acerca de nosotros</h5>
+                    <div class="texto-justificado">
+                        <p>
+                            En Siete Sopas nos especializamos en ofrecer sopas tradicionales y reconfortantes,
+                            preparadas con ingredientes frescos y recetas caseras. <br>
+
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Columna 3: Horario -->
+                <div class="col-md-4 mb-4 px-4 text-center">
+                    <h5 class="fw-bold">Horas abiertas</h5>
+                    <div class="horario">
+                        <p>Lunes a domingo:</p>
+                        <p>🕘 9:00 AM - 1:00 AM</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Línea inferior -->
+        <div class="text-center text-white py-3 mt-4" style="background-color: #000;">
+            <p class="mb-0">&copy; 2025 Restaurante Siete Sopas. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+    const fechaInput = document.getElementById("fecha");
+    const horaSelect = document.getElementById("hora");
+    const personasInput = document.getElementById("personas");
+    const reservaForm = document.getElementById("reservaForm");
+
+    // 1. Limita fechas al año actual y evita fechas pasadas
+    const hoy = new Date();
+    const anioActual = hoy.getFullYear();
+    const fechaMin = hoy.toISOString().split("T")[0];
+    const fechaMax = `${anioActual}-12-31`;
+    fechaInput.setAttribute("min", fechaMin);
+    fechaInput.setAttribute("max", fechaMax);
+    fechaInput.addEventListener("focus", () => fechaInput.showPicker?.()); // Mostrar calendario al hacer clic
+
+    // 2. Simular disponibilidad dinámica de mesas por franja
+    const disponibilidadMesas = {
+        "10:00": 20,
+        "12:00": 20,
+        "14:00": 20,
+        "16:00": 20,
+        "18:00": 0,
+        "20:00": 20,
+        "22:00": 20
+    };
+
+    // 3. Cargar dinámicamente opciones de horario y deshabilitar si están completas
+    function actualizarOpcionesHorario() {
+    horaSelect.innerHTML = `<option value="">Selecciona un horario</option>`;
+    Object.keys(disponibilidadMesas).forEach(horario => {
+        const mesasDisponibles = disponibilidadMesas[horario];
+        const option = document.createElement("option");
+
+        option.value = horario;
+
+        if (mesasDisponibles <= 0) {
+            option.textContent = `${formatearHora(horario)} - (completo)`;
+            option.disabled = true;
+        } else {
+            option.textContent = `${formatearHora(horario)} - ${mesasDisponibles} mesa(s) disponibles`;
+        }
+
+        horaSelect.appendChild(option);
+    });
+}
+
+
+    function formatearHora(hora24) {
+        const [h, m] = hora24.split(":").map(Number);
+        const ampm = h >= 12 ? "PM" : "AM";
+        const hora12 = h % 12 === 0 ? 12 : h % 12;
+        return `${hora12}:${m.toString().padStart(2, "0")} ${ampm}`;
+    }
+
+    // 4. Validación y consumo de mesas
+    reservaForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const horario = horaSelect.value;
+        const personas = parseInt(personasInput.value);
+
+        if (!horario || isNaN(personas)) {
+            alert("Por favor completa todos los campos correctamente.");
+            return;
+        }
+
+        const mesasRequeridas = personas <= 5 ? 1 : 2;
+
+        if (disponibilidadMesas[horario] >= mesasRequeridas) {
+            disponibilidadMesas[horario] -= mesasRequeridas;
+            alert("✅ ¡Reserva registrada exitosamente!");
+            this.reset();
+            actualizarOpcionesHorario();
+        } else {
+            alert("❌ No hay suficientes mesas disponibles para el horario seleccionado.");
+        }
+    });
+
+    // Inicialización al cargar
+    window.addEventListener("DOMContentLoaded", actualizarOpcionesHorario);
+</script>
+
+</body>
+
+</html>

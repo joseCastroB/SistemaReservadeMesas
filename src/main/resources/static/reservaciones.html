@@ -89,7 +89,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="personas" class="form-label">Número de personas</label>
+                        <label for="personas" class="form-label">Número de personas (máx 10)</label>
                         <input type="number" class="form-control" id="personas" min="1" max="10" required />
                     </div>
                     <div class="mb-3">
@@ -99,15 +99,19 @@
                             <option value="comun">Mesa común</option>
                             <option value="terraza">Mesa en terraza</option>
                             <option value="privada">Mesa privada</option>
-                            <option value="ventana">Cerca a ventana</option>
+                            <option value="ventana">Mesa cerca a ventana</option>
                         </select>
                     </div>
-                   
+
                 </div>
             </div>
 
-            <!-- Botón fuera de las columnas -->
+            <!-- Aviso importante y botón -->
             <div class="text-center mt-4">
+                <p class="text-danger fw-bold mt-3">
+                    Importante: Contamos con una tolerancia de 15 minutos. Pasado ese tiempo, la mesa será liberada para
+                    comensales de ingreso libre.
+                </p>
                 <button type="submit" class="btn btn-success px-5">Confirmar Reserva</button>
             </div>
         </form>
@@ -163,86 +167,116 @@
     </footer>
 
     <script>
-    const fechaInput = document.getElementById("fecha");
-    const horaSelect = document.getElementById("hora");
-    const personasInput = document.getElementById("personas");
-    const reservaForm = document.getElementById("reservaForm");
+        const fechaInput = document.getElementById("fecha");
+        const horaSelect = document.getElementById("hora");
+        const personasInput = document.getElementById("personas");
+        const tipoMesaSelect = document.getElementById("tipoMesa");
+        const reservaForm = document.getElementById("reservaForm");
 
-    // 1. Limita fechas al año actual y evita fechas pasadas
-    const hoy = new Date();
-    const anioActual = hoy.getFullYear();
-    const fechaMin = hoy.toISOString().split("T")[0];
-    const fechaMax = `${anioActual}-12-31`;
-    fechaInput.setAttribute("min", fechaMin);
-    fechaInput.setAttribute("max", fechaMax);
-    fechaInput.addEventListener("focus", () => fechaInput.showPicker?.()); // Mostrar calendario al hacer clic
+        const hoy = new Date();
+        const anioActual = hoy.getFullYear();
+        const fechaMin = hoy.toISOString().split("T")[0];
+        const fechaMax = `${anioActual}-12-31`;
+        fechaInput.setAttribute("min", fechaMin);
+        fechaInput.setAttribute("max", fechaMax);
+        fechaInput.addEventListener("focus", () => fechaInput.showPicker?.());
 
-    // 2. Simular disponibilidad dinámica de mesas por franja
-    const disponibilidadMesas = {
-        "10:00": 20,
-        "12:00": 20,
-        "14:00": 20,
-        "16:00": 20,
-        "18:00": 0,
-        "20:00": 20,
-        "22:00": 20
-    };
+        const disponibilidad = {
+            "10:00": { totalPersonas: 0, mesas: { comun: 5, terraza: 5, privada: 5, ventana: 5 } },
+            "12:00": { totalPersonas: 0, mesas: { comun: 5, terraza: 5, privada: 5, ventana: 5 } },
+            "14:00": { totalPersonas: 0, mesas: { comun: 5, terraza: 5, privada: 5, ventana: 5 } },
+            "16:00": { totalPersonas: 70, mesas: { comun: 5, terraza: 5, privada: 5, ventana: 5 } },
+            "18:00": { totalPersonas: 0, mesas: { comun: 5, terraza: 5, privada: 5, ventana: 5 } },
+            "20:00": { totalPersonas: 0, mesas: { comun: 5, terraza: 5, privada: 5, ventana: 5 } },
+            "22:00": { totalPersonas: 0, mesas: { comun: 5, terraza: 5, privada: 5, ventana: 5 } }
+        };
 
-    // 3. Cargar dinámicamente opciones de horario y deshabilitar si están completas
-    function actualizarOpcionesHorario() {
-    horaSelect.innerHTML = `<option value="">Selecciona un horario</option>`;
-    Object.keys(disponibilidadMesas).forEach(horario => {
-        const mesasDisponibles = disponibilidadMesas[horario];
-        const option = document.createElement("option");
+        function actualizarOpcionesHorario() {
+            horaSelect.innerHTML = `<option value="">Selecciona un horario</option>`;
+            for (let horario in disponibilidad) {
+                const personas = disponibilidad[horario].totalPersonas;
+                const mesas = disponibilidad[horario].mesas;
+                const totalMesas = Object.values(mesas).reduce((a, b) => a + b, 0);
+                const option = document.createElement("option");
+                option.value = horario;
 
-        option.value = horario;
+                if (personas >= 70) {
+                    option.textContent = `${formatearHora(horario)} - (ocupado 70%+)`;
+                    option.disabled = true;
+                } else {
+                    option.textContent = `${formatearHora(horario)} - ${totalMesas} mesa${totalMesas !== 1 ? 's' : ''} disponibles`;
+                }
 
-        if (mesasDisponibles <= 0) {
-            option.textContent = `${formatearHora(horario)} - (completo)`;
-            option.disabled = true;
-        } else {
-            option.textContent = `${formatearHora(horario)} - ${mesasDisponibles} mesa(s) disponibles`;
+                horaSelect.appendChild(option);
+            }
         }
 
-        horaSelect.appendChild(option);
-    });
-}
+        function actualizarOpcionesTipoMesa(horario) {
+            tipoMesaSelect.innerHTML = `<option value="">Selecciona tipo de mesa</option>`;
+            const tipos = disponibilidad[horario].mesas;
 
-
-    function formatearHora(hora24) {
-        const [h, m] = hora24.split(":").map(Number);
-        const ampm = h >= 12 ? "PM" : "AM";
-        const hora12 = h % 12 === 0 ? 12 : h % 12;
-        return `${hora12}:${m.toString().padStart(2, "0")} ${ampm}`;
-    }
-
-    // 4. Validación y consumo de mesas
-    reservaForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const horario = horaSelect.value;
-        const personas = parseInt(personasInput.value);
-
-        if (!horario || isNaN(personas)) {
-            alert("Por favor completa todos los campos correctamente.");
-            return;
+            for (let tipo in tipos) {
+                const disponible = tipos[tipo];
+                const option = document.createElement("option");
+                option.value = tipo;
+                option.textContent = `Mesa ${tipo} (${disponible} disponible${disponible !== 1 ? 's' : ''})`;
+                if (disponible <= 0) option.disabled = true;
+                tipoMesaSelect.appendChild(option);
+            }
         }
 
-        const mesasRequeridas = personas <= 5 ? 1 : 2;
+        function formatearHora(hora24) {
+            const [h, m] = hora24.split(":").map(Number);
+            const ampm = h >= 12 ? "PM" : "AM";
+            const hora12 = h % 12 === 0 ? 12 : h % 12;
+            return `${hora12}:${m.toString().padStart(2, "0")} ${ampm}`;
+        }
 
-        if (disponibilidadMesas[horario] >= mesasRequeridas) {
-            disponibilidadMesas[horario] -= mesasRequeridas;
+        reservaForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const horario = horaSelect.value;
+            const personas = parseInt(personasInput.value);
+            const tipoMesa = tipoMesaSelect.value;
+
+            if (!horario || isNaN(personas) || !tipoMesa) {
+                alert("Por favor completa todos los campos correctamente.");
+                return;
+            }
+
+            const mesasRequeridas = personas <= 5 ? 1 : 2;
+            const capacidadActual = disponibilidad[horario].totalPersonas;
+            const mesaDisponible = disponibilidad[horario].mesas[tipoMesa];
+
+            if (capacidadActual + personas > 100) {
+                alert("❌ Excederías la capacidad máxima de personas para ese horario.");
+                return;
+            }
+
+            if (mesaDisponible < mesasRequeridas) {
+                alert("❌ No hay suficientes mesas disponibles del tipo seleccionado.");
+                return;
+            }
+
+            disponibilidad[horario].totalPersonas += personas;
+            disponibilidad[horario].mesas[tipoMesa] -= mesasRequeridas;
+
             alert("✅ ¡Reserva registrada exitosamente!");
             this.reset();
             actualizarOpcionesHorario();
-        } else {
-            alert("❌ No hay suficientes mesas disponibles para el horario seleccionado.");
-        }
-    });
+            actualizarOpcionesTipoMesa(horario);
+        });
 
-    // Inicialización al cargar
-    window.addEventListener("DOMContentLoaded", actualizarOpcionesHorario);
-</script>
+        horaSelect.addEventListener("change", () => {
+            const horario = horaSelect.value;
+            if (horario) actualizarOpcionesTipoMesa(horario);
+            else tipoMesaSelect.innerHTML = `<option value="">Selecciona tipo de mesa</option>`;
+        });
+
+        window.addEventListener("DOMContentLoaded", actualizarOpcionesHorario);
+    </script>
+
+
 
 </body>
 

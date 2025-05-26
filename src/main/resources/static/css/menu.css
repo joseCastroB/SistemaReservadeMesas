@@ -1,0 +1,150 @@
+ .menu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .menu-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+  
+  .menu-category {
+    text-align: center;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 500px;
+    cursor: pointer;
+  }
+  
+  .menu-category.featured {
+    max-width: 600px;
+  }
+  
+  .menu-category:not(.featured) {
+    width: calc(50% - 15px);
+  }
+  
+  .menu-category:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .image-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    background-color: #f5f5f5;
+    padding: 10px;
+}
+
+.image-placeholder img {
+    max-width: auto;
+    max-height: auto;
+    width: 60%;
+    height: 50%;
+    object-fit: contain;
+    margin: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.image-placeholder img:hover {
+    transform: scale(1.03);
+}
+  
+  .menu-category h3 {
+    margin: 15px 0;
+    font-size: 1.3rem;
+    color: #333;
+    padding: 0 15px;
+  }
+  
+  .category-pair {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+  }
+  
+  /* Estilos para el modal de zoom */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    overflow: auto;
+    animation: fadeIn 0.3s;
+  }
+  
+  .modal-content {
+    display: block;
+    margin: auto;
+    max-height: 80vh;
+    max-width: 25vw;
+    height:auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: zoomIn 0.3s;
+  }
+  
+  #caption {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    padding: 10px;
+  }
+  
+  .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+  }
+  
+  @keyframes zoomIn {
+    from {transform: translate(-50%, -50%) scale(0.7)}
+    to {transform: translate(-50%, -50%) scale(1)}
+  }
+  
+  @keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+  }
+  
+  @media (max-width: 768px) {
+    .menu-category:not(.featured),
+    .menu-category.featured {
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    .category-pair {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .modal-content {
+      max-width: 95vw;
+    }
+  }

@@ -26,8 +26,8 @@
                     <ul class="navbar-nav me-auto ms-4">
                         <li class="nav-item"><a class="nav-link" href="admin.html">RESERVAS</a></li>
                         <li class="nav-item"><a class="nav-link" href="reservasanonimas.html">RESERVAS ANONIMAS</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nosotros.html">REPORTES</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#contacto">PERFIL</a></li>
+                        <li class="nav-item"><a class="nav-link" href="reportes.html">REPORTES</a></li>
+                        <li class="nav-item"><a class="nav-link" href="perfil.html">PERFIL</a></li>
                     </ul>
                     <a class="navbar-brand login-icon" href="login.html" title="Cerrar sesión">
                         <i class="bi bi-box-arrow-right" style="font-size: 1.8rem;"></i>
@@ -49,6 +49,9 @@
 
         <!-- Filtros adicionales -->
         <div class="row mb-4">
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="filtroNombre" placeholder="Nombre" />
+            </div>
             <div class="col-md-2">
                 <select class="form-select" id="filtroTipoMesa">
                     <option value="">Tipo Mesa</option>
@@ -78,15 +81,6 @@
                     <option value="admin1">admin1</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <select class="form-select" id="filtroBloqueo">
-                    <option value="">Tipo Bloqueo</option>
-                    <option value="ninguno">Ninguno</option>
-                    <option value="evento">Evento</option>
-                    <option value="mantenimiento">Mantenimiento</option>
-                    <option value="sobreocupación">Sobreocupación</option>
-                </select>
-            </div>
         </div>
 
         <!-- Tabla de reservas -->
@@ -104,74 +98,70 @@
                         <th>Estado</th>
                         <th>Nota Admin</th>
                         <th>Gestionado Por</th>
-                        <th>Tipo de Bloqueo</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tablaReservas">
-                    <!-- Datos dinámicos aquí -->
-                </tbody>
+                <tbody id="tablaReservas"></tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar acción</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de realizar esta acción?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarAccion">Sí, confirmar</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const usuarioAdmin = "admin1";
-
         const reservas = [
             {
-                id: 1,
-                nombre: "Juan Pérez",
-                telefono: "987654321",
-                correo: "juan@example.com",
-                personas: 4,
-                tipoMesa: "terraza",
-                hora: "12:00 - 14:00",
-                fecha: "2025-05-24",
-                comentarios: "Cumpleaños",
-                estado: "pendiente",
-                notaAdmin: "",
-                gestionadoPor: "",
-                tipoBloqueo: ""
+                id: 1, nombre: "Juan Pérez", telefono: "987654321", correo: "juan@example.com",
+                personas: 4, tipoMesa: "terraza", hora: "12:00 - 14:00", fecha: "2025-05-24",
+                comentarios: "Cumpleaños", estado: "pendiente", notaAdmin: "", gestionadoPor: ""
             },
             {
-                id: 2,
-                nombre: "Ana Gómez",
-                telefono: "954123456",
-                correo: "ana@example.com",
-                personas: 6,
-                tipoMesa: "comun",
-                hora: "20:00 - 22:00",
-                fecha: "2025-05-24",
-                comentarios: "",
-                estado: "pendiente",
-                notaAdmin: "",
-                gestionadoPor: "",
-                tipoBloqueo: ""
+                id: 2, nombre: "Ana Gómez", telefono: "954123456", correo: "ana@example.com",
+                personas: 6, tipoMesa: "comun", hora: "20:00 - 22:00", fecha: "2025-05-24",
+                comentarios: "", estado: "pendiente", notaAdmin: "", gestionadoPor: ""
             }
         ];
+
+        let accionPendiente = null;
 
         function mostrarReservas(fecha) {
             const tbody = document.getElementById("tablaReservas");
             tbody.innerHTML = "";
-
+            const nombre = document.getElementById("filtroNombre").value.toLowerCase();
             const tipoMesa = document.getElementById("filtroTipoMesa").value;
             const hora = document.getElementById("filtroHora").value;
             const estado = document.getElementById("filtroEstado").value;
             const admin = document.getElementById("filtroAdmin").value;
-            const tipoBloqueo = document.getElementById("filtroBloqueo").value;
 
             const filtradas = reservas.filter(r =>
                 r.fecha === fecha &&
+                (nombre === "" || r.nombre.toLowerCase().includes(nombre)) &&
                 (tipoMesa === "" || r.tipoMesa === tipoMesa) &&
                 (hora === "" || r.hora === hora) &&
                 (estado === "" || r.estado === estado) &&
-                (admin === "" || r.gestionadoPor === admin) &&
-                (tipoBloqueo === "" || r.tipoBloqueo === tipoBloqueo)
+                (admin === "" || r.gestionadoPor === admin)
             );
 
             if (filtradas.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='12' class='text-center'>No hay reservas para esta fecha y filtros.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='11' class='text-center'>No hay reservas para esta fecha y filtros.</td></tr>";
                 return;
             }
 
@@ -189,41 +179,40 @@
                     <td><input type="text" class="form-control form-control-sm" id="nota-${r.id}" value="${r.notaAdmin || ''}" /></td>
                     <td id="admin-${r.id}">${r.gestionadoPor || '-'}</td>
                     <td>
-                        <select class="form-select form-select-sm" id="bloqueo-${r.id}">
-                            <option value="ninguno" ${r.tipoBloqueo === 'ninguno' ? 'selected' : ''}>Ninguno</option>
-                            <option value="evento" ${r.tipoBloqueo === 'evento' ? 'selected' : ''}>Evento</option>
-                            <option value="mantenimiento" ${r.tipoBloqueo === 'mantenimiento' ? 'selected' : ''}>Mantenimiento</option>
-                            <option value="sobreocupación" ${r.tipoBloqueo === 'sobreocupación' ? 'selected' : ''}>Sobreocupación</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button class="btn btn-success btn-sm me-1" onclick="gestionarEstado(${r.id}, 'confirmada')">✔ Confirmar</button>
-                        <button class="btn btn-danger btn-sm me-1" onclick="gestionarEstado(${r.id}, 'rechazada')">✖ Rechazar</button>
-                        <button class="btn btn-warning btn-sm me-1 text-white" onclick="gestionarEstado(${r.id}, 'pendiente')">↺ Pendiente</button>
-                        <button class="btn btn-secondary btn-sm" onclick="gestionarEstado(${r.id}, 'no se presentó')">🙈 No se presentó</button>
+                        <button class="btn btn-success btn-sm me-1" onclick="confirmarModal(${r.id}, 'confirmada')">✔ Confirmar</button>
+                        <button class="btn btn-danger btn-sm me-1" onclick="confirmarModal(${r.id}, 'rechazada')">✖ Rechazar</button>
+                        <button class="btn btn-secondary btn-sm" onclick="confirmarModal(${r.id}, 'no se presentó')"> No se presentó</button>
                     </td>
                 `;
                 tbody.appendChild(fila);
             });
         }
 
+        function confirmarModal(id, estado) {
+            accionPendiente = () => gestionarEstado(id, estado);
+            new bootstrap.Modal(document.getElementById("modalConfirmacion")).show();
+        }
+
+        document.getElementById("btnConfirmarAccion").addEventListener("click", () => {
+            if (accionPendiente) accionPendiente();
+            const modal = bootstrap.Modal.getInstance(document.getElementById("modalConfirmacion"));
+            modal.hide();
+        });
+
         function gestionarEstado(id, nuevoEstado) {
             const reserva = reservas.find(r => r.id === id);
             if (!reserva) return;
 
             const notaInput = document.getElementById(`nota-${id}`);
-            const bloqueoInput = document.getElementById(`bloqueo-${id}`);
-
             reserva.estado = nuevoEstado;
             reserva.notaAdmin = notaInput?.value.trim() || "";
-            reserva.tipoBloqueo = bloqueoInput?.value.trim() || "";
             reserva.gestionadoPor = usuarioAdmin;
 
             document.getElementById(`estado-${id}`).textContent = nuevoEstado;
-            document.getElementById(`estado-${id}`).className = `fw-bold text-capitalize ${nuevoEstado === "confirmada" ? "text-success" :
-                nuevoEstado === "rechazada" ? "text-danger" :
-                    nuevoEstado === "no se presentó" ? "text-secondary" : "text-warning"
-                }`;
+            document.getElementById(`estado-${id}`).className =
+                `fw-bold text-capitalize ${nuevoEstado === "confirmada" ? "text-success" :
+                    nuevoEstado === "rechazada" ? "text-danger" :
+                        nuevoEstado === "no se presentó" ? "text-secondary" : "text-warning"}`;
 
             document.getElementById(`admin-${id}`).textContent = usuarioAdmin;
         }
@@ -239,7 +228,7 @@
             mostrarReservas(this.value);
         });
 
-        ["filtroTipoMesa", "filtroHora", "filtroEstado", "filtroAdmin", "filtroBloqueo"].forEach(id => {
+        ["filtroNombre", "filtroTipoMesa", "filtroHora", "filtroEstado", "filtroAdmin"].forEach(id => {
             document.getElementById(id).addEventListener("change", () => {
                 const fecha = document.getElementById("filtroFecha").value;
                 mostrarReservas(fecha);
@@ -247,6 +236,7 @@
         });
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

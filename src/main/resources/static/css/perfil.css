@@ -1,0 +1,19 @@
+  body {
+            background-color: #ffffff;
+        }
+        .profile-container {
+            padding: 2rem;
+        }
+        .card-header {
+            background-color: #198754;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }

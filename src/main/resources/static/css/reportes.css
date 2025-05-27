@@ -1,0 +1,22 @@
+ body {
+            background-color: #fff;
+        }
+        .report-section {
+            padding: 2rem;
+        }
+        .report-section h2 {
+            color: #198754;
+            font-weight: bold;
+        }
+        .btn-export {
+            margin-top: 1rem;
+        }
+        .table thead {
+            background-color: #d1e7dd;
+        }
+        .badge-success {
+            background-color: #198754;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+        }

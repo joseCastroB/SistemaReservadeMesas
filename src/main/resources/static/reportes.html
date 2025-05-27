@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes de Reservas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/reportes.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="top-navbar">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="images/47sopas.png" alt="Logo Siete Sopas" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbars-rs-food">
+                    <ul class="navbar-nav me-auto ms-4">
+                        <li class="nav-item"><a class="nav-link" href="admin.html">RESERVAS</a></li>
+                        <li class="nav-item"><a class="nav-link" href="reservasanonimas.html">RESERVAS ANÓNIMAS</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="reportes.html">REPORTES</a></li>
+                        <li class="nav-item"><a class="nav-link" href="perfil.html">PERFIL</a></li>
+                    </ul>
+                    <a class="navbar-brand login-icon" href="login.html" title="Cerrar sesión">
+                        <i class="bi bi-box-arrow-right" style="font-size: 1.8rem;"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Report Section -->
+    <section class="report-section container mt-4">
+        <h2>Reportes de Reservas</h2>
+
+        <!-- Filtros -->
+        <div class="row mt-4 g-3">
+            <div class="col-md-4">
+                <label for="filtro-fecha" class="form-label">Rango de Fechas</label>
+                <input type="date" class="form-control" id="fechaInicio">
+                <input type="date" class="form-control mt-1" id="fechaFin">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Estado</label>
+                <select class="form-select" id="filtro-estado">
+                    <option value="">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmado">Confirmado</option>
+                    <option value="rechazado">Rechazado</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tipo de Mesa</label>
+                <select class="form-select" id="filtro-tipo">
+                    <option value="">Todos</option>
+                    <option value="comun">Común</option>
+                    <option value="terraza">Terraza</option>
+                    <option value="privada">Privada</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid align-items-end">
+                <button class="btn btn-success mt-3" onclick="filtrar()">Filtrar</button>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Tipo Mesa</th>
+                        <th>Estado</th>
+                        <th>Personas</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-reservas">
+                    <!-- Filas generadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="btn-export d-flex gap-2">
+            <button class="btn btn-outline-success"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+            <button class="btn btn-outline-danger"><i class="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <h5 class="text-center">Reservas por Estado</h5>
+                <canvas id="graficoEstado"></canvas>
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-center">Reservas por Tipo de Mesa</h5>
+                <canvas id="graficoMesa"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Ejemplo de carga de datos de prueba
+        document.addEventListener("DOMContentLoaded", () => {
+            const tbody = document.getElementById("tabla-reservas");
+            tbody.innerHTML = `
+                <tr>
+                    <td>Juan Pérez</td>
+                    <td>2025-05-24</td>
+                    <td>12:00 - 14:00</td>
+                    <td>Terraza</td>
+                    <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                    <td>4</td>
+                    <td>Cumpleaños</td>
+                </tr>
+                <tr>
+                    <td>Ana Gómez</td>
+                    <td>2025-05-24</td>
+                    <td>20:00 - 22:00</td>
+                    <td>Común</td>
+                    <td><span class="badge bg-success">Confirmado</span></td>
+                    <td>6</td>
+                    <td>-</td>
+                </tr>
+            `;
+        });
+
+        // Gráfico de Estado
+        new Chart(document.getElementById("graficoEstado"), {
+            type: 'pie',
+            data: {
+                labels: ["Pendiente", "Confirmado", "Rechazado"],
+                datasets: [{
+                    label: "Cantidad",
+                    data: [5, 10, 2],
+                    backgroundColor: ["#ffc107", "#198754", "#dc3545"]
+                }]
+            }
+        });
+
+        // Gráfico de Tipo Mesa
+        new Chart(document.getElementById("graficoMesa"), {
+            type: 'bar',
+            data: {
+                labels: ["Común", "Terraza", "Privada"],
+                datasets: [{
+                    label: "Reservas",
+                    data: [4, 6, 3],
+                    backgroundColor: "#198754"
+                }]
+            }
+        });
+
+        function filtrar() {
+            alert("Lógica de filtrado aquí...");
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

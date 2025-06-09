@@ -1,0 +1,42 @@
+/* Estilos generales para el formulario de registro */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-card {
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-title {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.texto-justificado {
+  text-align: justify;
+}
+
+footer .texto-justificado {
+  text-align: justify;
+}
+
+footer .horario {
+  text-align: center;
+}
+
+footer .fw-bold {
+  margin-bottom: 0.5rem;
+}

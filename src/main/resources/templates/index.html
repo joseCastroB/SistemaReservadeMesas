@@ -13,31 +13,57 @@
 
 <body>
 
-    <!-- Navbar -->
-    <header class="top-navbar">
-        <nav class="navbar navbar-expand-lg navbar-light">
-            <div class="container">
-                <a class="navbar-brand" th:href="@{/}">
-                    <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" />
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbars-rs-food">
-                    <ul class="navbar-nav me-auto ms-4">
-                        <li class="nav-item"><a class="nav-link" th:href="@{/}">INICIO</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/menu}">MENU</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/reservaciones}">RESERVACIONES</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/nosotros}">NOSOTROS</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/perfil}">PERFIL</a></li>
-                    </ul>
-                    <a class="navbar-brand login-icon" th:href="@{/login}">
-                        <img th:src="@{/images/user3.png}" alt="Ícono de usuario" />
-                    </a>
+<!-- Navbar Actualizado -->
+<header class="top-navbar">
+    <nav class="navbar navbar-expand-lg navbar-light"> 
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" style="max-height: 50px;"/> <!-- Ajuste de estilo opcional -->
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto ms-4">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">INICIO</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/menu}">MENU</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/reservaciones}">RESERVACIONES</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/nosotros}">NOSOTROS</a></li>
+                    
+                    <!-- Solo para usuarios autenticados -->
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/perfil}">PERFIL</a>
+                    </li>
+                    <!-- Solo para administradores -->
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/admin}">PANEL ADMIN</a>
+                    </li>
+                </ul>
+
+                <!-- Lógica de Login/Logout a la derecha -->
+                <div class="d-flex align-items-center">
+                    <!-- Si el usuario NO está autenticado, muestra el ícono de login -->
+                    <div sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/login}">
+                            <img th:src="@{/images/user3.png}" alt="Iniciar Sesión" style="max-height: 35px;" />
+                        </a>
+                    </div>
+
+                    <!-- Si el usuario SÍ está autenticado, muestra bienvenida y botón de logout -->
+                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
+                        <span class="navbar-text me-3">
+                           Hola, <strong sec:authentication="name">Usuario</strong>
+                        </span>
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button class="btn btn-outline-danger btn-sm" type="submit">Cerrar Sesión</button>
+                        </form>
+                    </div>
                 </div>
+
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
 
     <!-- Carrusel Responsive -->
     <div id="carruselPrincipal" class="carousel slide carousel-fade carrusel-solapado" data-bs-ride="carousel">

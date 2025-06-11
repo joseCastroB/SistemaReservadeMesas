@@ -1,39 +1,64 @@
 package com.example.demo.Controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.Services.UsuarioService;
 import com.example.demo.dto.UsuarioRegistroDto;
 
 
 @Controller
-@RequiredArgsConstructor
 public class AuthController {
-     private final UsuarioService usuarioService;
 
+    private final UsuarioService usuarioService;
+
+    public AuthController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
+    /**
+     * Muestra el formulario de login.
+     */
     @GetMapping("/login")
-    public String login() {
-        return "login";
+    public String showLoginForm() {
+        return "login"; // Devuelve login.html
     }
-
+    
+    /**
+     * Muestra el formulario de registro.
+     * Prepara un objeto DTO vacío para el binding del formulario.
+     */
     @GetMapping("/register")
-    public String registerForm(Model model) {
+    public String showRegistrationForm(Model model) {
         model.addAttribute("usuario", new UsuarioRegistroDto());
-        return "register";
+        return "register"; // Devuelve register.html
     }
 
+    /**
+     * Procesa el formulario de registro.
+     */
     @PostMapping("/register")
-    public String registrarUsuario(@ModelAttribute("usuario") UsuarioRegistroDto usuarioRegistroDto, Model model) {
-        usuarioService.registrarUsuario(usuarioRegistroDto);
-        model.addAttribute("success", "✅ Registro exitoso. Ahora puedes iniciar sesión.");
-        return "redirect:/login";
+    public String registerUserAccount(@ModelAttribute("usuario") UsuarioRegistroDto registroDTO, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.registrar(registroDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "¡Registro exitoso! Ahora puedes iniciar sesión.");
+            return "redirect:/login";
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/register";
+        }
     }
-
-    @GetMapping("/")
-    public String home() {
-        return "home";
+    
+    /**
+     * Muestra la página de administrador.
+     * Solo accesible para usuarios con rol ADMIN.
+     */
+    @GetMapping("/admin")
+    public String adminPage() {
+        return "admin"; // Devuelve admin.html
     }
 }

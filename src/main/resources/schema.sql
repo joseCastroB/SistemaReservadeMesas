@@ -5,7 +5,7 @@ CREATE TABLE Usuarios (
   correo VARCHAR(255) UNIQUE NOT NULL,
   telefono VARCHAR(50),
   usuario VARCHAR(50),
-  contraseña VARCHAR(255) NOT NULL, -- usa 'contrasena' en vez de 'contraseña'
+  contrasena VARCHAR(255) NOT NULL, -- usa 'contrasena' en vez de 'contraseña'
   rol VARCHAR(50) NOT NULL          -- en vez de ENUM
 );
 

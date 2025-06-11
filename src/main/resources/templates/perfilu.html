@@ -1,45 +1,53 @@
 <!DOCTYPE html>
-<html lang="es">
+<!-- Añadimos los namespaces de Thymeleaf y Spring Security -->
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil del Administrador</title>
+    <title>Mi Perfil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="stylesheet" href="css/perfil.css" />
+    <!-- Usamos Thymeleaf para las rutas de los CSS -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/perfil.css}" />
 </head>
 
 <body>
 
-    <!-- Navbar -->
+    <!-- Navbar Actualizado y Dinámico -->
     <header class="top-navbar">
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
-                <a class="navbar-brand" href="index.html">
-                    <img src="images/47sopas.png" alt="Logo Siete Sopas" />
+                <a class="navbar-brand" th:href="@{/}">
+                    <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" style="max-height: 50px;"/>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbars-rs-food">
+                <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto ms-4">
-                        <li class="nav-item"><a class="nav-link" href="index.html">INICIO</a></li>
-                        <li class="nav-item"><a class="nav-link" href="menu.html">MENU</a></li>
-                        <li class="nav-item"><a class="nav-link" href="reservaciones.html">RESERVACIONES</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nosotros.html">NOSOTROS</a></li>
-                        <li class="nav-item"><a class="nav-link" href="perfilu.html">PERFIL</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/}">INICIO</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/menu}">MENU</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/reservaciones}">RESERVACIONES</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/nosotros}">NOSOTROS</a></li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link active" th:href="@{/perfil}">PERFIL</a></li>
+                        <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link" th:href="@{/admin}">PANEL ADMIN</a></li>
                     </ul>
-                    <a class="navbar-brand login-icon" href="login.html" title="Cerrar sesión">
-                        <i class="bi bi-box-arrow-right" style="font-size: 1.8rem;"></i>
-                    </a>
+                    <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
+                        <span class="navbar-text me-3">
+                           Hola, <strong sec:authentication="name">Usuario</strong>
+                        </span>
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button class="btn btn-outline-danger btn-sm" type="submit">Cerrar Sesión</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- Perfil del Administrador -->
+    <!-- Perfil del Usuario -->
     <div class="container profile-container">
         <div class="row g-4">
             <!-- Información de Perfil -->
@@ -47,10 +55,10 @@
                 <div class="card text-center shadow-sm">
                     <div class="card-header">Perfil</div>
                     <div class="card-body">
-                        <img src="images/admin-placeholder.png" class="rounded-circle mb-3" width="120" height="120"
-                            alt="Foto perfil">
-                        <h5 class="card-title">Administrador</h5>
-                        <p class="card-text">admin@sietesopas.com</p>
+                        <img th:src="@{/images/admin-placeholder.png}" class="rounded-circle mb-3" width="120" height="120" alt="Foto perfil">
+                        <!-- Mostramos el nombre de usuario y el correo dinámicamente -->
+                        <h5 class="card-title" th:text="${usuario.usuario}">Nombre de Usuario</h5>
+                        <p class="card-text" th:text="${usuario.correo}">correo@ejemplo.com</p>
                     </div>
                 </div>
             </div>
@@ -60,19 +68,21 @@
                 <div class="card shadow-sm">
                     <div class="card-header">Datos Personales</div>
                     <div class="card-body">
-                        <form id="form-perfil">
+                        <!-- El formulario ahora usa th:object para el binding de datos -->
+                        <form id="form-perfil" th:object="${usuario}">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Nombres Completos</label>
-                                    <input type="text" class="form-control" value="Juan" required>
+                                    <!-- Usamos th:value para mostrar el valor actual -->
+                                    <input type="text" class="form-control" th:value="*{nombreCompleto}" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Correo</label>
-                                    <input type="email" class="form-control" value="admin@sietesopas.com" disabled>
+                                    <input type="email" class="form-control" th:value="*{correo}" disabled>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" value="987654321">
+                                    <input type="text" class="form-control" th:value="*{telefono}">
                                 </div>
                                 <div class="col-12 d-flex justify-content-end mt-3">
                                     <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -82,7 +92,7 @@
                     </div>
                 </div>
 
-                <!-- Cambiar contraseña -->
+                <!-- Cambiar contraseña (funcionalidad futura) -->
                 <div class="card shadow-sm mt-4">
                     <div class="card-header">Cambiar Contraseña</div>
                     <div class="card-body">
@@ -107,25 +117,22 @@
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Por ahora mantenemos los alerts, pero el siguiente paso sería hacerlos funcionales.
         document.getElementById("form-perfil").addEventListener("submit", function (e) {
             e.preventDefault();
-            alert("Perfil actualizado correctamente.");
+            alert("La funcionalidad para guardar cambios se implementará pronto.");
         });
 
         document.getElementById("form-password").addEventListener("submit", function (e) {
             e.preventDefault();
-            // Lógica de validación o llamada backend
-            alert("Contraseña actualizada.");
+            alert("La funcionalidad para actualizar la contraseña se implementará pronto.");
         });
     </script>
 </body>
-
 </html>

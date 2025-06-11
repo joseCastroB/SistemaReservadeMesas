@@ -7,5 +7,5 @@ public class UsuarioRegistroDto {
     private String correo;
     private String telefono;
     private String usuario;
-    private String contrasena;
+    private String contrasena; // Cambiado de contraseña
 }

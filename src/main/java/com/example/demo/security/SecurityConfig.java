@@ -1,83 +1,78 @@
 package com.example.demo.security;
 
-import lombok.RequiredArgsConstructor;
+import com.example.demo.Services.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-
-import com.example.demo.Services.UsuarioServiceImpl;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
-@RequiredArgsConstructor
+@EnableWebSecurity
 public class SecurityConfig {
-    
-    private final UsuarioServiceImpl usuarioService;
+
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
+
+    @Bean
+    public static PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Define el proveedor de autenticación.
+     * Aquí es donde conectamos nuestro UserDetailsService y el PasswordEncoder.
+     * Esta es la pieza que faltaba.
+     */
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/register", "/css/**", "/images/**").permitAll()
+            .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
+            .authorizeHttpRequests(authorize -> authorize
+                // ... (permisos para h2-console, /, login, register, etc.)
+                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll() 
+                .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/menu", "/reservaciones", "/nosotros").permitAll()
+                // --- AÑADIMOS LA REGLA PARA PERFIL ---
+                // Solo usuarios autenticados pueden acceder a /perfil
+                .requestMatchers("/perfil").authenticated()
+                // ... (permisos para admin)
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .successHandler(customAuthenticationSuccessHandler()) // Usamos el SuccessHandler
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true)
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout").permitAll()
-            );
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            )
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
+            // Le decimos a HttpSecurity que use nuestro proveedor de autenticación configurado
+            .authenticationProvider(authenticationProvider()); 
+
         return http.build();
-    }
-
-    // Manejador de éxito de autenticación
-    @Bean
-    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new AuthenticationSuccessHandler() {
-            @Override
-            public void onAuthenticationSuccess(HttpServletRequest request,
-                                                HttpServletResponse response,
-                                                Authentication authentication) throws IOException, ServletException {
-                // Verifica si el usuario tiene rol ADMIN
-                if (authentication.getAuthorities().stream()
-                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                    response.sendRedirect("/admin.html");
-                } else {
-                    // Redirige a la raíz por defecto
-                    response.sendRedirect("/");
-                }
-            }
-        };
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> {
-            var usuario = usuarioService.findByUsuario(username);
-            if (usuario == null) {
-                throw new UsernameNotFoundException("Usuario no encontrado");
-            }
-            return User.withUsername(usuario.getUsuario())
-                    .password(usuario.getContrasena())
-                    .roles(usuario.getRol())
-                    .build();
-        };
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

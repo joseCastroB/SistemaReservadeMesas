@@ -1,6 +1,8 @@
 package com.example.demo.Controller;
 
+import com.example.demo.dto.DisponibilidadTipoMesaDTO;
 import com.example.demo.dto.FranjaDisponibleDTO;
+import com.example.demo.dto.DisponibilidadTipoMesaDTO;
 import com.example.demo.dto.ReservaFormDTO;
 import com.example.demo.Entities.TipoMesa;
 import com.example.demo.Entities.Usuario;
@@ -37,21 +39,25 @@ public class ReservaController {
 
     @GetMapping("/reservaciones")
     public String mostrarFormularioReserva(Model model, Authentication authentication) {
+        // Creamos el objeto DTO que usará el formulario
+        ReservaFormDTO reservaForm = new ReservaFormDTO();
+
         // Regla 2: Autocompletar datos si el usuario está logueado
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName();
-            Usuario usuario = usuarioRepository.findByUsuario(username).orElse(null);
-            model.addAttribute("usuario", usuario);
+            // Buscamos el usuario y si existe, poblamos el DTO
+            usuarioRepository.findByUsuario(username).ifPresent(usuario -> {
+                reservaForm.setNombreCliente(usuario.getNombreCompleto());
+                reservaForm.setCorreoCliente(usuario.getCorreo());
+                reservaForm.setTelefonoCliente(usuario.getTelefono());
+            });
         }
         
-        // Añadimos un objeto DTO vacío para el binding del formulario
-        model.addAttribute("reservaForm", new ReservaFormDTO());
+        // Pasamos el DTO (ya poblado o vacío) al modelo
+        model.addAttribute("reservaForm", reservaForm);
         
-        // Cargamos los tipos de mesa para el dropdown
-        List<TipoMesa> tiposDeMesa = tipoMesaRepository.findAll();
-        model.addAttribute("tiposDeMesa", tiposDeMesa);
-        
-        // Regla 3: Ponemos la fecha mínima como hoy.
+        // Pasamos los otros datos necesarios para la vista
+        model.addAttribute("tiposDeMesa", tipoMesaRepository.findAll());
         model.addAttribute("fechaMin", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         model.addAttribute("fechaMax", "2025-12-31");
         
@@ -66,6 +72,14 @@ public class ReservaController {
         return reservaService.getDisponibilidadFranjas(fechaSeleccionada);
     }
     
+    // --- NUEVO ENDPOINT DE API ---
+    @GetMapping("/api/disponibilidad-tipos")
+    @ResponseBody
+    public List<DisponibilidadTipoMesaDTO> getDisponibilidadTipos(@RequestParam String fecha, @RequestParam Integer idFranja) {
+        LocalDate fechaSeleccionada = LocalDate.parse(fecha, DateTimeFormatter.ISO_LOCAL_DATE);
+        return reservaService.getDisponibilidadPorTipoMesa(fechaSeleccionada, idFranja);
+    }
+
     @PostMapping("/reservaciones/crear")
     public String procesarReserva(@ModelAttribute("reservaForm") ReservaFormDTO formDTO,
                                  Authentication authentication,

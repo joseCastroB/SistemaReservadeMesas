@@ -1,12 +1,15 @@
 package com.example.demo.Services;
 
+import com.example.demo.dto.DisponibilidadTipoMesaDTO;
 import com.example.demo.dto.FranjaDisponibleDTO;
 import com.example.demo.dto.ReservaFormDTO;
 import com.example.demo.Entities.ConfiguracionFranja;
 import com.example.demo.Entities.Reserva;
+import com.example.demo.Entities.TipoMesa;
 import com.example.demo.Entities.Usuario;
 import com.example.demo.Repository.ConfiguracionFranjaRepository;
 import com.example.demo.Repository.ReservaRepository;
+import com.example.demo.Repository.TipoMesaRepository;
 import com.example.demo.Repository.UsuarioRepository;
 
 import org.springframework.stereotype.Service;
@@ -24,11 +27,13 @@ public class ReservaService {
     private final ReservaRepository reservaRepository;
     private final ConfiguracionFranjaRepository franjaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TipoMesaRepository tipoMesaRepository; // Añadir
 
-    public ReservaService(ReservaRepository reservaRepository, ConfiguracionFranjaRepository franjaRepository, UsuarioRepository usuarioRepository) {
+    public ReservaService(ReservaRepository reservaRepository, ConfiguracionFranjaRepository franjaRepository, UsuarioRepository usuarioRepository, TipoMesaRepository tipoMesaRepository) {
         this.reservaRepository = reservaRepository;
         this.franjaRepository = franjaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.tipoMesaRepository = tipoMesaRepository;
     }
 
     /**
@@ -55,6 +60,25 @@ public class ReservaService {
         }).collect(Collectors.toList());
     }
 
+
+    // --- NUEVO MÉTODO ---
+    /**
+     * Obtiene la disponibilidad detallada para cada tipo de mesa en una fecha y franja específicas.
+     */
+    public List<DisponibilidadTipoMesaDTO> getDisponibilidadPorTipoMesa(LocalDate fecha, Integer idFranja) {
+        List<TipoMesa> todosLosTipos = tipoMesaRepository.findAll();
+        final int MESAS_POR_TIPO = 5; // Regla de negocio: 5 mesas por cada tipo
+
+        return todosLosTipos.stream().map(tipo -> {
+            Integer mesasOcupadas = reservaRepository.countMesasByFechaAndFranjaAndTipoMesa(fecha, idFranja, tipo.getIdTipoMesa());
+            mesasOcupadas = (mesasOcupadas == null) ? 0 : mesasOcupadas;
+            
+            int mesasDisponibles = MESAS_POR_TIPO - mesasOcupadas;
+            
+            return new DisponibilidadTipoMesaDTO(tipo.getIdTipoMesa(), tipo.getNombre(), mesasDisponibles);
+        }).collect(Collectors.toList());
+    }
+
     /**
      * Crea una nueva reserva aplicando todas las reglas de negocio.
      */
@@ -77,7 +101,9 @@ public class ReservaService {
                 .filter(f -> f.getIdFranja().equals(formDTO.getIdFranja()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("La franja horaria no es válida."));
-
+        TipoMesa tipoMesaSeleccionado = tipoMesaRepository.findById(formDTO.getIdTipoMesa())
+                .orElseThrow(() -> new IllegalStateException("Tipo de mesa no válido."));
+                
         int mesasRequeridas = formDTO.getNumeroPersonas() <= 5 ? 1 : 2;
 
         if (formDTO.getNumeroPersonas() > franjaSeleccionada.getPersonasDisponibles() || mesasRequeridas > franjaSeleccionada.getMesasDisponibles()) {
@@ -94,6 +120,7 @@ public class ReservaService {
         nuevaReserva.setNumeroPersonas(formDTO.getNumeroPersonas());
         nuevaReserva.setEstado("CONFIRMADA");
         nuevaReserva.setUsuario(usuario);
+        nuevaReserva.setTipoMesa(tipoMesaSeleccionado);
         
         ConfiguracionFranja franja = franjaRepository.findById(formDTO.getIdFranja()).get();
         nuevaReserva.setFranja(franja);

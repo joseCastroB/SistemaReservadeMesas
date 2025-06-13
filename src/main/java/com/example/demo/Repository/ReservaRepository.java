@@ -22,4 +22,11 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
     // Busca si un usuario ya tiene una reserva para un día específico.
     List<Reserva> findByUsuarioAndFecha(Usuario usuario, LocalDate fecha);
+
+    // --- NUEVO MÉTODO ---
+    // Cuenta las mesas reservadas para un TIPO específico en una fecha y franja.
+    @Query("SELECT SUM(CASE WHEN r.numeroPersonas <= 5 THEN 1 ELSE 2 END) FROM Reserva r WHERE r.fecha = :fecha AND r.franja.idFranja = :idFranja AND r.tipoMesa.idTipoMesa = :idTipoMesa AND r.estado = 'CONFIRMADA'")
+    Integer countMesasByFechaAndFranjaAndTipoMesa(LocalDate fecha, Integer idFranja, Integer idTipoMesa);
+
+
 }

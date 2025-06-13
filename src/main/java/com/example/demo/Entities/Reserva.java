@@ -29,4 +29,11 @@ public class Reserva {
     
     // Nota: El idMesa se manejará de forma más abstracta en la lógica de servicio,
     // ya que una reserva puede ocupar más de una mesa.
+
+    // --- LÍNEA AÑADIDA ---
+    // Ahora cada reserva está asociada a un tipo de mesa.
+    @ManyToOne
+    @JoinColumn(name = "idTipoMesa", nullable = false)
+    private TipoMesa tipoMesa;
+
 }

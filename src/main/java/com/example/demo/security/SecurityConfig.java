@@ -48,10 +48,11 @@ public class SecurityConfig {
                 // ... (permisos para h2-console, /, login, register, etc.)
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll() 
                 .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/menu", "/reservaciones", "/nosotros").permitAll()
+                .requestMatchers("/menu", "/nosotros").permitAll() // Se mantiene el acceso público a menu y nosotros
                 // --- AÑADIMOS LA REGLA PARA PERFIL ---
-                // Solo usuarios autenticados pueden acceder a /perfil
-                .requestMatchers("/perfil").authenticated()
+                // --- Rutas Protegidas ---
+                // Se requiere iniciar sesión para acceder a estas rutas.
+                .requestMatchers("/reservaciones", "/perfil").authenticated()
                 // ... (permisos para admin)
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

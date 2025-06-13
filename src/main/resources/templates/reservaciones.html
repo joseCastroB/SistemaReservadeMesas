@@ -13,10 +13,10 @@
 
     <!-- Navbar Actualizado y Dinámico -->
     <header class="top-navbar">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light ">
             <div class="container">
                 <a class="navbar-brand" th:href="@{/}">
-                    <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" style="max-height: 50px;"/>
+                    <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" style="max-height: 50px;" />
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
@@ -25,10 +25,13 @@
                     <ul class="navbar-nav me-auto ms-4">
                         <li class="nav-item"><a class="nav-link" th:href="@{/}">INICIO</a></li>
                         <li class="nav-item"><a class="nav-link" th:href="@{/menu}">MENU</a></li>
-                        <li class="nav-item"><a class="nav-link active" th:href="@{/reservaciones}">RESERVACIONES</a></li>
+                        <li class="nav-item"><a class="nav-link active" th:href="@{/reservaciones}">RESERVACIONES</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" th:href="@{/nosotros}">NOSOTROS</a></li>
-                        <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link" th:href="@{/perfil}">PERFIL</a></li>
-                        <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link" th:href="@{/admin}">PANEL ADMIN</a></li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link"
+                                th:href="@{/perfil}">PERFIL</a></li>
+                        <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link"
+                                th:href="@{/admin}">PANEL ADMIN</a></li>
                     </ul>
                     <div class="d-flex align-items-center">
                         <!-- Si el usuario NO está autenticado, muestra el ícono de login -->
@@ -40,7 +43,7 @@
                         <!-- Si el usuario SÍ está autenticado, muestra bienvenida y botón de logout -->
                         <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
                             <span class="navbar-text me-3">
-                               Hola, <strong sec:authentication="name">Usuario</strong>
+                                Hola, <strong sec:authentication="name">Usuario</strong>
                             </span>
                             <form th:action="@{/logout}" method="post" class="d-inline">
                                 <button class="btn btn-outline-danger btn-sm" type="submit">Cerrar Sesión</button>
@@ -54,7 +57,7 @@
 
     <div class="container mt-5 mb-5">
         <h2 class="text-center text-success mb-4 fw-bold">Reserva tu Mesa</h2>
-        
+
         <!-- Mensajes de feedback -->
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
@@ -66,15 +69,18 @@
                     <h5 class="fw-bold mb-3">Datos del cliente</h5>
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombre" th:field="*{nombreCliente}" th:value="${usuario?.nombreCompleto}" required />
+                        <!-- CAMBIO: Añadido 'readonly' para que el campo no sea editable -->
+                        <input type="text" class="form-control" id="nombre" th:field="*{nombreCliente}" required readonly />
                     </div>
                     <div class="mb-3">
                         <label for="telefono" class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="telefono" th:field="*{telefonoCliente}" th:value="${usuario?.telefono}" required />
+                        <!-- CAMBIO: Añadido 'readonly' para que el campo no sea editable -->
+                        <input type="tel" class="form-control" id="telefono" th:field="*{telefonoCliente}" required readonly />
                     </div>
                     <div class="mb-3">
                         <label for="correo" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="correo" th:field="*{correoCliente}" th:value="${usuario?.correo}" required />
+                        <!-- CAMBIO: Añadido 'readonly' para que el campo no sea editable -->
+                        <input type="email" class="form-control" id="correo" th:field="*{correoCliente}" required readonly />
                     </div>
                     <div class="mb-3">
                         <label for="comentarios" class="form-label">Comentarios adicionales</label>
@@ -87,7 +93,8 @@
                     <h5 class="fw-bold mb-3">Detalles de la reserva</h5>
                     <div class="mb-3">
                         <label for="fecha" class="form-label">Fecha de reserva</label>
-                        <input type="date" class="form-control" id="fecha" th:field="*{fecha}" th:min="${fechaMin}" th:max="${fechaMax}" required />
+                        <input type="date" class="form-control" id="fecha" th:field="*{fecha}" th:min="${fechaMin}"
+                            th:max="${fechaMax}" required />
                     </div>
                     <div class="mb-3">
                         <label for="idFranja" class="form-label">Franja horaria</label>
@@ -97,13 +104,15 @@
                     </div>
                     <div class="mb-3">
                         <label for="personas" class="form-label">Número de personas (máx 10)</label>
-                        <input type="number" class="form-control" id="personas" th:field="*{numeroPersonas}" min="1" max="10" required />
+                        <input type="number" class="form-control" id="personas" th:field="*{numeroPersonas}" min="1"
+                            max="10" required />
                     </div>
                     <div class="mb-3">
                         <label for="idTipoMesa" class="form-label">Tipo de mesa</label>
                         <select class="form-select" id="idTipoMesa" th:field="*{idTipoMesa}" required>
                             <option value="">Selecciona tipo de mesa</option>
-                            <option th:each="tipo : ${tiposDeMesa}" th:value="${tipo.idTipoMesa}" th:text="${tipo.nombre}"></option>
+                            <option th:each="tipo : ${tiposDeMesa}" th:value="${tipo.idTipoMesa}"
+                                th:text="${tipo.nombre}"></option>
                         </select>
                     </div>
                 </div>
@@ -169,36 +178,63 @@
         document.addEventListener("DOMContentLoaded", function() {
             const fechaInput = document.getElementById('fecha');
             const franjaSelect = document.getElementById('idFranja');
+            const tipoMesaSelect = document.getElementById('idTipoMesa'); // Referencia al nuevo select
 
-            fechaInput.addEventListener('change', function() {
-                const fechaSeleccionada = this.value;
+            // Función para actualizar las franjas horarias
+            function actualizarFranjas() {
+                const fechaSeleccionada = fechaInput.value;
                 if (!fechaSeleccionada) {
                     franjaSelect.innerHTML = '<option value="">Selecciona una fecha primero</option>';
+                    tipoMesaSelect.innerHTML = '<option value="">Selecciona una franja primero</option>';
                     return;
                 }
                 
-                // Llamada a nuestra API para obtener la disponibilidad
                 fetch(`/api/disponibilidad?fecha=${fechaSeleccionada}`)
                     .then(response => response.json())
                     .then(data => {
                         franjaSelect.innerHTML = '<option value="">Selecciona un horario</option>';
                         data.forEach(franja => {
-                            let optionText;
-                            if (franja.estaCasiLleno) {
-                                optionText = `${franja.franjaHoraria} - (Ocupado +70%)`;
-                            } else {
-                                optionText = `${franja.franjaHoraria} - ${franja.mesasDisponibles} mesas disponibles`;
-                            }
+                            let optionText = franja.estaCasiLleno ? 
+                                `${franja.franjaHoraria} - (Ocupado +70%)` : 
+                                `${franja.franjaHoraria} - ${franja.mesasDisponibles} mesas disponibles`;
                             
                             const option = new Option(optionText, franja.idFranja);
-                            if (franja.mesasDisponibles <= 0) {
-                                option.disabled = true;
-                            }
+                            if (franja.mesasDisponibles <= 0) option.disabled = true;
                             franjaSelect.appendChild(option);
                         });
                     });
-            });
+            }
+
+            // --- NUEVA FUNCIÓN ---
+            // Función para actualizar los tipos de mesa
+            function actualizarTiposDeMesa() {
+                const fechaSeleccionada = fechaInput.value;
+                const franjaSeleccionada = franjaSelect.value;
+                
+                if (!fechaSeleccionada || !franjaSeleccionada) {
+                    tipoMesaSelect.innerHTML = '<option value="">Selecciona una franja primero</option>';
+                    return;
+                }
+                
+                // Llamada a nuestra NUEVA API
+                fetch(`/api/disponibilidad-tipos?fecha=${fechaSeleccionada}&idFranja=${franjaSeleccionada}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        tipoMesaSelect.innerHTML = '<option value="">Selecciona tipo de mesa</option>';
+                        data.forEach(tipo => {
+                            const optionText = `${tipo.nombreTipoMesa} (${tipo.mesasDisponibles} disponibles)`;
+                            const option = new Option(optionText, tipo.idTipoMesa);
+                            if (tipo.mesasDisponibles <= 0) option.disabled = true;
+                            tipoMesaSelect.appendChild(option);
+                        });
+                    });
+            }
+
+            // --- EVENT LISTENERS ACTUALIZADOS ---
+            fechaInput.addEventListener('change', actualizarFranjas);
+            franjaSelect.addEventListener('change', actualizarTiposDeMesa);
         });
     </script>
 </body>
+
 </html>

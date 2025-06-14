@@ -1,6 +1,13 @@
 package com.example.demo.security;
 
 import com.example.demo.Services.*;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -10,7 +17,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 
 @Configuration
 @EnableWebSecurity
@@ -40,10 +56,36 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Nuevo Bean para manejar la redirección después de un login exitoso.
+     */
+    @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                // Si el usuario tiene el rol 'ADMIN', lo redirigimos a /admin
+                boolean isAdmin = authentication.getAuthorities().stream()
+                        .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+                
+                if (isAdmin) {
+                    response.sendRedirect("/admin");
+                } else {
+                    // Para cualquier otro rol, lo redirigimos a la página principal
+                    response.sendRedirect("/");
+                }
+            }
+        };
+    }
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                .ignoringRequestMatchers(new AntPathRequestMatcher("/admin/api/**"))
+            )
             .authorizeHttpRequests(authorize -> authorize
                 // ... (permisos para h2-console, /, login, register, etc.)
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll() 
@@ -60,7 +102,8 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
+                // Usamos nuestro manejador de éxito personalizado en lugar de defaultSuccessUrl
+                .successHandler(myAuthenticationSuccessHandler())
                 .permitAll()
             )
             .logout(logout -> logout

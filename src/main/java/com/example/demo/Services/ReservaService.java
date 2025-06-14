@@ -12,11 +12,14 @@ import com.example.demo.Repository.ReservaRepository;
 import com.example.demo.Repository.TipoMesaRepository;
 import com.example.demo.Repository.UsuarioRepository;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.criteria.Predicate; // Importante
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,4 +130,53 @@ public class ReservaService {
         
         return reservaRepository.save(nuevaReserva);
     }
+
+    // --- NUEVO MÉTODO ---
+    public List<Reserva> findReservasByFecha(LocalDate fecha) {
+        return reservaRepository.findByFecha(fecha);
+    }
+
+    // --- NUEVO MÉTODO ---
+    @Transactional
+    public void actualizarEstadoReserva(Integer idReserva, String nuevoEstado) {
+        Reserva reserva = reservaRepository.findById(idReserva)
+                .orElseThrow(() -> new IllegalStateException("Reserva no encontrada con ID: " + idReserva));
+        
+        reserva.setEstado(nuevoEstado);
+        reservaRepository.save(reserva);
+    }
+
+    /**
+     * NUEVO MÉTODO: Encuentra reservas usando una combinación de filtros opcionales.
+     * Utiliza JPA Specifications para construir la consulta dinámicamente.
+     */
+    public List<Reserva> findWithFilters(LocalDate fecha, String nombre, Integer idTipoMesa, Integer idFranja, String estado) {
+        return reservaRepository.findAll((Specification<Reserva>) (root, query, criteriaBuilder) -> {
+            
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 1. Filtro obligatorio por fecha
+            predicates.add(criteriaBuilder.equal(root.get("fecha"), fecha));
+
+            // 2. Filtros opcionales
+            if (nombre != null && !nombre.isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("nombreCliente")), "%" + nombre.toLowerCase() + "%"));
+            }
+            if (idTipoMesa != null) {
+                predicates.add(criteriaBuilder.equal(root.get("tipoMesa").get("idTipoMesa"), idTipoMesa));
+            }
+            if (idFranja != null) {
+                predicates.add(criteriaBuilder.equal(root.get("franja").get("idFranja"), idFranja));
+            }
+            if (estado != null && !estado.isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.get("estado"), estado));
+            }
+
+            // Ordena por ID para mantener un orden consistente
+            query.orderBy(criteriaBuilder.asc(root.get("idReserva")));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        });
+    }
+
 }

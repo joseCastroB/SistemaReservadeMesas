@@ -53,12 +53,6 @@ public class AuthController {
         }
     }
     
-    /**
-     * Muestra la página de administrador.
-     * Solo accesible para usuarios con rol ADMIN.
-     */
-    @GetMapping("/admin")
-    public String adminPage() {
-        return "admin"; // Devuelve admin.html
-    }
+    // El método adminPage() que estaba aquí ha sido eliminado para resolver el conflicto.
+    // El nuevo AdminController ahora maneja la ruta /admin.
 }

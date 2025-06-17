@@ -83,35 +83,56 @@ public class ReservaService {
     }
 
     /**
-     * Crea una nueva reserva aplicando todas las reglas de negocio.
+     * MÉTODO CORREGIDO: Crea una nueva reserva aplicando todas las reglas de negocio,
+     * incluyendo la validación de disponibilidad por tipo de mesa y la regla del 70%.
      */
     @Transactional
     public Reserva crearReserva(ReservaFormDTO formDTO, String username) {
-        // Regla 1: El usuario debe estar registrado. Lo obtenemos.
         Usuario usuario = usuarioRepository.findByUsuario(username)
                 .orElseThrow(() -> new IllegalStateException("Usuario no autenticado."));
 
         LocalDate fechaReserva = LocalDate.parse(formDTO.getFecha(), DateTimeFormatter.ISO_LOCAL_DATE);
 
-        // Regla 1: El usuario solo puede tener una reserva por día.
         if (!reservaRepository.findByUsuarioAndFecha(usuario, fechaReserva).isEmpty()) {
             throw new IllegalStateException("Ya tienes una reserva para este día.");
         }
         
-        // Regla 5 y 6: Validar disponibilidad.
-        List<FranjaDisponibleDTO> disponibilidad = getDisponibilidadFranjas(fechaReserva);
-        FranjaDisponibleDTO franjaSeleccionada = disponibilidad.stream()
-                .filter(f -> f.getIdFranja().equals(formDTO.getIdFranja()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("La franja horaria no es válida."));
-        TipoMesa tipoMesaSeleccionado = tipoMesaRepository.findById(formDTO.getIdTipoMesa())
-                .orElseThrow(() -> new IllegalStateException("Tipo de mesa no válido."));
-                
-        int mesasRequeridas = formDTO.getNumeroPersonas() <= 5 ? 1 : 2;
-
-        if (formDTO.getNumeroPersonas() > franjaSeleccionada.getPersonasDisponibles() || mesasRequeridas > franjaSeleccionada.getMesasDisponibles()) {
-            throw new IllegalStateException("No hay suficiente disponibilidad para el número de personas o mesas en esta franja.");
+        // --- INICIO DE LA VALIDACIÓN CORREGIDA ---
+        
+        // 1. Obtener la franja y calcular ocupación actual
+        ConfiguracionFranja franja = franjaRepository.findById(formDTO.getIdFranja())
+                .orElseThrow(() -> new IllegalStateException("Franja no encontrada"));
+        Integer personasOcupadas = reservaRepository.countPersonasByFechaAndFranja(fechaReserva, formDTO.getIdFranja());
+        personasOcupadas = (personasOcupadas == null) ? 0 : personasOcupadas;
+        
+        // 2. VALIDACIÓN CLAVE: Regla del 70%
+        boolean estaCasiLleno = (double) personasOcupadas / franja.getCapacidadMaxima() >= 0.7;
+        if (estaCasiLleno) {
+            throw new IllegalStateException("Esta franja horaria ya está casi llena y no acepta más reservas en este momento.");
         }
+
+        // 3. Calcular mesas requeridas por el usuario
+        int mesasRequeridas = formDTO.getNumeroPersonas() <= 5 ? 1 : 2;
+        final int MESAS_INICIALES_POR_TIPO = 5;
+
+        // 4. Contar mesas ya ocupadas para el TIPO de mesa específico
+        Integer mesasOcupadasDelTipo = reservaRepository.countMesasByFechaAndFranjaAndTipoMesa(
+            fechaReserva, formDTO.getIdFranja(), formDTO.getIdTipoMesa()
+        );
+        mesasOcupadasDelTipo = (mesasOcupadasDelTipo == null) ? 0 : mesasOcupadasDelTipo;
+        int mesasDisponiblesDelTipo = MESAS_INICIALES_POR_TIPO - mesasOcupadasDelTipo;
+
+        // 5. VALIDACIÓN de mesas por tipo
+        if (mesasRequeridas > mesasDisponiblesDelTipo) {
+            throw new IllegalStateException("No hay suficientes mesas del tipo seleccionado para el número de personas.");
+        }
+
+        // 6. Validación de capacidad total de personas (se mantiene como una segunda barrera)
+        if ((personasOcupadas + formDTO.getNumeroPersonas()) > franja.getCapacidadMaxima()) {
+            throw new IllegalStateException("La capacidad máxima de personas para esta franja sería excedida.");
+        }
+        
+        // --- FIN DE LA VALIDACIÓN CORREGIDA ---
         
         // Si todas las validaciones pasan, creamos la reserva.
         Reserva nuevaReserva = new Reserva();
@@ -123,10 +144,11 @@ public class ReservaService {
         nuevaReserva.setNumeroPersonas(formDTO.getNumeroPersonas());
         nuevaReserva.setEstado("CONFIRMADA");
         nuevaReserva.setUsuario(usuario);
-        nuevaReserva.setTipoMesa(tipoMesaSeleccionado);
-        
-        ConfiguracionFranja franja = franjaRepository.findById(formDTO.getIdFranja()).get();
         nuevaReserva.setFranja(franja);
+        
+        TipoMesa tipoMesaSeleccionado = tipoMesaRepository.findById(formDTO.getIdTipoMesa())
+                .orElseThrow(() -> new IllegalStateException("Tipo de mesa no válido."));
+        nuevaReserva.setTipoMesa(tipoMesaSeleccionado);
         
         return reservaRepository.save(nuevaReserva);
     }

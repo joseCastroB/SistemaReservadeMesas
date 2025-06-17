@@ -1,11 +1,9 @@
-
 /* Fuente elegante */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap");
 
 /* ----------------------------------------------------------------------- */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 section h2 {
@@ -20,7 +18,6 @@ section h2 {
 footer {
   font-weight: 500;
 }
-
 
 /* Colores inspirados en Siete Sopas */
 .bg-siete-sopas {
@@ -49,14 +46,13 @@ footer {
 
 /* Header estilo Siete Sopas */
 .top-navbar {
-  background-color: #FFFBEB;
+  background-color: #fffbeb;
   border-bottom-left-radius: 90px;
   border-bottom-right-radius: 90px;
   padding: 5px 0;
   position: relative;
   z-index: 10;
 }
-
 
 .navbar-brand img {
   height: 100px;
@@ -101,7 +97,6 @@ footer {
   justify-content: space-between;
 }
 
-
 /* CARRUSEL */
 /* CARRUSEL QUE SUBE Y SE SOLAPA DETRÁS DEL HEADER */
 .carrusel-solapado {
@@ -137,12 +132,12 @@ footer {
 /* Elimina fondo gris del texto del carrusel */
 .carousel-caption.custom-caption {
   position: absolute;
-  top: 57%;              /* siempre centrado verticalmente */
-  left: 15%;              /* mismo margen izquierdo */
+  top: 57%; /* siempre centrado verticalmente */
+  left: 15%; /* mismo margen izquierdo */
   transform: translateY(-50%);
   text-align: left;
   max-width: 500px;
-  padding: 0;            /* sin padding innecesario */
+  padding: 0; /* sin padding innecesario */
   background: none !important;
 }
 
@@ -172,34 +167,34 @@ footer {
 /* Tamaño personalizado de controles */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  width: 50px;      /* Aumenta o reduce el ancho */
-  height: 50px;     /* Aumenta o reduce el alto */
+  width: 50px; /* Aumenta o reduce el ancho */
+  height: 50px; /* Aumenta o reduce el alto */
   background-size: 70% 90%; /* para que no se pixele al crecer */
 }
 
 /* Opcional: estilos del contenedor del botón */
 .carousel-control-prev,
 .carousel-control-next {
-  width: 70px;       /* área clicable más grande */
+  width: 70px; /* área clicable más grande */
   justify-content: center;
 }
 
 /* Si quieres un fondo redondo con color */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  background-color: red;       /* o cualquier color */
-  border-radius : 50%;
+  background-color: red; /* o cualquier color */
+  border-radius: 50%;
   padding: 10px;
   opacity: 0.9;
 }
 
 /*REEL DE INSTAGRAM*/
 .reel-section {
-  background-image: url('../images/img-08.jpg'); /* cambia ruta si es necesario */
+  background-image: url("../images/img-08.jpg"); /* cambia ruta si es necesario */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-   min-height: 100vh; /* Importante: hace visible el fondo */
+  min-height: 100vh; /* Importante: hace visible el fondo */
   position: relative;
 }
 
@@ -207,7 +202,12 @@ footer {
   content: "";
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.3);/* oscurecer un poco si el texto no contrasta */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.3
+  ); /* oscurecer un poco si el texto no contrasta */
   z-index: 1;
 }
 
@@ -216,12 +216,10 @@ footer {
   z-index: 2;
 }
 
-
 /* FOOTER */
 .texto-justificado {
   text-align: justify;
 }
-
 
 /*RESERVARCIONES.HTML*/
 
@@ -235,67 +233,107 @@ footer {
 /*LOGIN.HTML*/
 /* Estilo general del contenedor del login */
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: start;
-    margin-top: 5rem; /* Separación desde el top */
-    margin-bottom: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  margin-top: 5rem; /* Separación desde el top */
+  margin-bottom: 4rem;
 }
 
 /* Estilo del card */
 .login-card {
-    width: 100%;
-    max-width: 600px;
-    padding: 6rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 0.75rem;
+  width: 100%;
+  max-width: 600px;
+  padding: 6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
 }
 
 /* Estilo del título */
 .login-title {
-    color: #1b5e20; /* Verde oscuro */
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 1rem;
+  color: #1b5e20; /* Verde oscuro */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 /* Estilo del subtítulo */
 .login-subtitle {
-    color: #d32f2f; /* Rojo alerta */
-    text-align: center;
-    font-weight: 500;
-    margin-bottom: 1.5rem;
+  color: #d32f2f; /* Rojo alerta */
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
 }
 
 /* Botón */
 .btn-success {
-    background-color: #26802c; /* Verde oscuro */
-    border-color: #287d2e;
+  background-color: #26802c; /* Verde oscuro */
+  border-color: #287d2e;
 }
 
 .btn-success:hover {
-    background-color: #145a17;
-    border-color: #145a17;
+  background-color: #145a17;
+  border-color: #145a17;
 }
-
 
 /*ADMIN.HTML*/
 
 body {
-    background-color: #fdfdfd;
+  background-color: #fdfdfd;
 }
 
-.table th, .table td {
-    vertical-align: middle;
-    text-align: center;
+.table th,
+.table td {
+  vertical-align: middle;
+  text-align: center;
 }
 
 #filtroFecha {
-    border: 2px solid #198754;
+  border: 2px solid #198754;
 }
 
+/* Mejoras de UX para navbar consistente */
+.navbar .collapse.navbar-collapse {
+  align-items: center;
+}
 
+/* Mejor responsividad del navbar */
+@media (max-width: 991.98px) {
+  .top-navbar {
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+  }
 
+  .navbar-brand img {
+    height: 70px;
+  }
 
+  .login-icon img {
+    height: 35px;
+    width: 35px;
+    margin-left: 20px;
+  }
 
+  .navbar-nav .nav-link {
+    font-size: 16px;
+    margin-right: 15px;
+  }
+}
 
+/* Estados activos para navegación */
+.navbar-nav .nav-link.active {
+  color: #b52e2e !important;
+  font-weight: 600;
+}
+
+/* Transiciones suaves */
+.navbar-nav .nav-link,
+.navbar-brand img,
+.login-icon img {
+  transition: all 0.3s ease;
+}
+
+/* Sombra sutil del navbar */
+.top-navbar {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}

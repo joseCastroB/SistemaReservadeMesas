@@ -1,0 +1,15 @@
+/* ESTILOS ESPECÍFICOS PARA ADMIN.HTML */
+
+.admin-body {
+  background-color: #fdfdfd;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+#filtroFecha {
+  border: 2px solid #198754;
+}

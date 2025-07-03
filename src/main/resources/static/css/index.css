@@ -1,0 +1,115 @@
+/* ESTILOS ESPECÍFICOS PARA INDEX.HTML */
+
+/* CARRUSEL */
+/* CARRUSEL QUE SUBE Y SE SOLAPA DETRÁS DEL HEADER */
+.carrusel-solapado {
+  margin-top: -120px; /* sube el carrusel detrás del header */
+  position: relative;
+  z-index: 1;
+}
+
+/* CONTENIDO RESPONSIVO CENTRADO A LA IZQUIERDA */
+.custom-caption {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  text-align: left;
+}
+
+.custom-caption h2,
+.custom-caption p {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.custom-caption .btn {
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+/* Elimina fondo gris del texto del carrusel */
+.carousel-caption.custom-caption {
+  position: absolute;
+  top: 57%; /* siempre centrado verticalmente */
+  left: 15%; /* mismo margen izquierdo */
+  transform: translateY(-50%);
+  text-align: left;
+  max-width: 500px;
+  padding: 0; /* sin padding innecesario */
+  background: none !important;
+}
+
+/* Título uniforme */
+.carousel-caption.custom-caption h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 15px;
+}
+
+/* Subtexto uniforme */
+.carousel-caption.custom-caption p {
+  font-size: 1.25rem;
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* Botón uniforme */
+.carousel-caption.custom-caption .btn {
+  font-size: 1.1rem;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Tamaño personalizado de controles */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 50px; /* Aumenta o reduce el ancho */
+  height: 50px; /* Aumenta o reduce el alto */
+  background-size: 70% 90%; /* para que no se pixele al crecer */
+}
+
+/* Opcional: estilos del contenedor del botón */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 70px; /* área clicable más grande */
+  justify-content: center;
+}
+
+/* Si quieres un fondo redondo con color */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: red; /* o cualquier color */
+  border-radius: 50%;
+  padding: 10px;
+  opacity: 0.9;
+}
+
+/* REEL DE INSTAGRAM */
+.reel-section {
+  background-image: url("../images/img-08.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  position: relative;
+}
+
+.reel-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.reel-section .container {
+  position: relative;
+  z-index: 2;
+}

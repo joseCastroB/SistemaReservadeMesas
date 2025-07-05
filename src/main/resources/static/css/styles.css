@@ -97,6 +97,62 @@ footer {
   justify-content: space-between;
 }
 
+/* Estilos para el dropdown del perfil */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  display: none; /* Oculta la flecha por defecto de Bootstrap */
+}
+
+.dropdown-menu {
+  background-color: #fffbeb;
+  border: 2px solid #981616;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  min-width: 160px;
+}
+
+.dropdown-item {
+  color: #1a1a1a;
+  font-weight: 500;
+  padding: 10px 15px;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f4c017;
+  color: #000;
+}
+
+.dropdown-divider {
+  border-top: 1px solid #981616;
+  margin: 5px 0;
+}
+
+.dropdown-header {
+  color: #981616 !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 8px 15px;
+}
+
+.dropdown-item button {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+}
+
+.dropdown-item button:hover {
+  background: none;
+}
+
 /* FOOTER */
 .texto-justificado {
   text-align: justify;

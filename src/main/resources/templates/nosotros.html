@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -44,13 +47,51 @@
               <li class="nav-item">
                 <a class="nav-link" th:href="@{/nosotros}">NOSOTROS</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" th:href="@{/perfil}">PERFIL</a>
-              </li>
             </ul>
-            <a class="navbar-brand login-icon" th:href="@{/login}">
-              <img th:src="@{/images/user3.png}" alt="Ícono de usuario" />
-            </a>
+
+            <!-- Lógica de Login/Logout a la derecha -->
+            <div class="d-flex align-items-center">
+              <!-- Si el usuario NO está autenticado, muestra el ícono de login -->
+              <div sec:authorize="!isAuthenticated()">
+                <a class="navbar-brand login-icon" th:href="@{/login}">
+                  <img th:src="@{/images/user3.png}" alt="Iniciar Sesión" />
+                </a>
+              </div>
+
+              <!-- Si el usuario SÍ está autenticado, muestra dropdown de perfil -->
+              <div sec:authorize="isAuthenticated()" class="dropdown">
+                <a
+                  class="navbar-brand login-icon dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <img th:src="@{/images/user3.png}" alt="Perfil de usuario" />
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <h6 class="dropdown-header">
+                      Hola, <span sec:authentication="name">Usuario</span>
+                    </h6>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item" th:href="@{/perfil}">Mi perfil</a>
+                  </li>
+                  <li sec:authorize="hasRole('ADMIN')">
+                    <a class="dropdown-item" th:href="@{/admin}">Panel Admin</a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                      <button class="dropdown-item" type="submit">
+                        Cerrar sesión
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </nav>

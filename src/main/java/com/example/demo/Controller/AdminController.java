@@ -24,30 +24,32 @@ public class AdminController {
     private final TipoMesaRepository tipoMesaRepository;
     private final ConfiguracionFranjaRepository franjaRepository;
 
-    public AdminController(ReservaService reservaService, TipoMesaRepository tipoMesaRepository, ConfiguracionFranjaRepository franjaRepository) {
+    public AdminController(ReservaService reservaService, TipoMesaRepository tipoMesaRepository,
+            ConfiguracionFranjaRepository franjaRepository) {
         this.reservaService = reservaService;
         this.tipoMesaRepository = tipoMesaRepository;
         this.franjaRepository = franjaRepository;
     }
 
     /**
-     * Muestra la página principal del administrador, cargando las reservas del día actual.
+     * Muestra la página principal del administrador, cargando las reservas del día
+     * actual.
      */
     @GetMapping
     public String mostrarPanelAdmin(Model model) {
         LocalDate hoy = LocalDate.now();
         List<Reserva> reservasDelDia = reservaService.findWithFilters(hoy, null, null, null, null);
-        
+
         model.addAttribute("reservas", reservasDelDia);
         model.addAttribute("fechaSeleccionada", hoy);
-        
+
         // Carga los datos para poblar los dropdowns de los filtros
         model.addAttribute("tiposDeMesa", tipoMesaRepository.findAll());
         model.addAttribute("franjasHorarias", franjaRepository.findAll());
-        
-        return "admin";
+
+        return "admin/admin"; // Apunta a la nueva estructura de carpetas
     }
-    
+
     /**
      * API MODIFICADA: Ahora acepta todos los parámetros de filtro.
      */
@@ -61,7 +63,7 @@ public class AdminController {
             @RequestParam(value = "estado", required = false) String estado) {
         return reservaService.findWithFilters(fecha, nombre, idTipoMesa, idFranja, estado);
     }
-    
+
     /**
      * Endpoint para actualizar el estado de una reserva.
      */

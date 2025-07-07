@@ -201,4 +201,62 @@ public class ReservaService {
         });
     }
 
+    /**
+     * NUEVO MÉTODO: Crea una reserva anónima (realizada por un admin).
+     * No tiene la restricción de una reserva por día por usuario.
+     */
+    @Transactional
+    public Reserva crearReservaAnonima(ReservaFormDTO formDTO, String adminUsername) {
+        // El admin que realiza la acción
+        Usuario admin = usuarioRepository.findByUsuario(adminUsername)
+                .orElseThrow(() -> new IllegalStateException("Administrador no autenticado."));
+
+        LocalDate fechaReserva = LocalDate.parse(formDTO.getFecha(), DateTimeFormatter.ISO_LOCAL_DATE);
+        
+        // --- VALIDACIONES DE DISPONIBILIDAD (similares a la reserva normal) ---
+        ConfiguracionFranja franja = franjaRepository.findById(formDTO.getIdFranja())
+                .orElseThrow(() -> new IllegalStateException("Franja no encontrada"));
+        Integer personasOcupadas = reservaRepository.countPersonasByFechaAndFranja(fechaReserva, formDTO.getIdFranja());
+        personasOcupadas = (personasOcupadas == null) ? 0 : personasOcupadas;
+
+        // Validamos la capacidad total de personas
+        if ((personasOcupadas + formDTO.getNumeroPersonas()) > franja.getCapacidadMaxima()) {
+            throw new IllegalStateException("La capacidad máxima de personas para esta franja sería excedida.");
+        }
+
+        // Validamos la disponibilidad por tipo de mesa
+        int mesasRequeridas = (int) Math.ceil((double) formDTO.getNumeroPersonas() / 5.0);
+        final int MESAS_INICIALES_POR_TIPO = 5;
+        Integer mesasOcupadasDelTipo = reservaRepository.countMesasByFechaAndFranjaAndTipoMesa(
+            fechaReserva, formDTO.getIdFranja(), formDTO.getIdTipoMesa()
+        );
+        mesasOcupadasDelTipo = (mesasOcupadasDelTipo == null) ? 0 : mesasOcupadasDelTipo;
+        int mesasDisponiblesDelTipo = MESAS_INICIALES_POR_TIPO - mesasOcupadasDelTipo;
+
+        if (mesasRequeridas > mesasDisponiblesDelTipo) {
+            throw new IllegalStateException("No hay suficientes mesas del tipo seleccionado para el número de personas.");
+        }
+        
+        // --- Creación de la reserva ---
+        Reserva nuevaReserva = new Reserva();
+        // Usamos los datos por defecto para el cliente anónimo
+        nuevaReserva.setNombreCliente("Anónimo");
+        nuevaReserva.setCorreoCliente("anonimo@sietesopas.com");
+        nuevaReserva.setTelefonoCliente("999999999");
+        nuevaReserva.setComentarios("Reserva en local por admin: " + adminUsername); // Comentario por defecto
+        
+        nuevaReserva.setFecha(fechaReserva);
+        nuevaReserva.setNumeroPersonas(formDTO.getNumeroPersonas());
+        nuevaReserva.setEstado("CONFIRMADA"); // Las reservas en local nacen con estado "CONFIRMADA"
+        nuevaReserva.setUsuario(null); // La reserva no pertenece a un cliente, sino que fue gestionada por un admin
+        nuevaReserva.setFranja(franja);
+        
+        TipoMesa tipoMesaSeleccionado = tipoMesaRepository.findById(formDTO.getIdTipoMesa())
+                .orElseThrow(() -> new IllegalStateException("Tipo de mesa no válido."));
+        nuevaReserva.setTipoMesa(tipoMesaSeleccionado);
+        
+        return reservaRepository.save(nuevaReserva);
+    }
+
+
 }

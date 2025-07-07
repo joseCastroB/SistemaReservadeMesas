@@ -1,6 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Entities.Reserva;
+import com.example.demo.dto.ReservaFormDTO;
 import com.example.demo.Repository.ConfiguracionFranjaRepository;
 import com.example.demo.Repository.TipoMesaRepository;
 import com.example.demo.Services.ReservaService;
@@ -12,8 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -75,4 +80,33 @@ public class AdminController {
             return "{\"status\":\"error\", \"message\":\"" + e.getMessage() + "\"}";
         }
     }
+
+    // --- NUEVO MÉTODO GET: Para mostrar la página de reservas anónimas ---
+    @GetMapping("/reservas-anonimas")
+    public String mostrarFormularioReservasAnonimas(Model model) {
+        // Pasamos los datos necesarios para los dropdowns y el formulario
+        model.addAttribute("reservaForm", new ReservaFormDTO());
+        model.addAttribute("tiposDeMesa", tipoMesaRepository.findAll());
+        model.addAttribute("fechaMin", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        model.addAttribute("fechaMax", "2025-12-31");
+        return "reservasanonimas"; // Devuelve reservasanonimas.html
+    }
+
+    // --- NUEVO MÉTODO POST: Para crear una reserva anónima ---
+    @PostMapping("/reservas-anonimas/crear")
+    public String procesarReservaAnonima(@ModelAttribute("reservaForm") ReservaFormDTO formDTO,
+                                          Authentication authentication,
+                                          RedirectAttributes redirectAttributes) {
+        try {
+            // Pasamos el nombre de usuario del admin para registrar quién hizo la reserva
+            String adminUsername = authentication.getName();
+            reservaService.crearReservaAnonima(formDTO, adminUsername);
+            redirectAttributes.addFlashAttribute("successMessage", "¡Reserva anónima registrada exitosamente!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al registrar la reserva: " + e.getMessage());
+        }
+        
+        return "redirect:/admin/reservas-anonimas";
+    }
+
 }

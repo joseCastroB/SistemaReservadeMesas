@@ -13,15 +13,20 @@
 <body>
     <!-- Navbar Dinámico para Admin -->
     <header class="top-navbar">
-        <nav class="navbar navbar-expand-lg navbar-light">
+        <nav class="navbar navbar-expand-lg navbar-light ">
             <div class="container">
                 <a class="navbar-brand" th:href="@{/}">
                     <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" style="max-height: 50px;"/>
                 </a>
-                <div class="collapse navbar-collapse">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="adminNavbar">
                     <ul class="navbar-nav me-auto ms-4">
                         <li class="nav-item"><a class="nav-link active" th:href="@{/admin}">RESERVAS</a></li>
-                        <!-- Añade aquí los enlaces a otras páginas de admin cuando las crees -->
+                        <li class="nav-item"><a class="nav-link" th:href="@{/admin/reservas-anonimas}">RESERVAS ANÓNIMAS</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" th:href="@{/admin/reportes}">REPORTES</a></li> -->
+                        <li class="nav-item"><a class="nav-link" th:href="@{/perfil}">PERFIL</a></li>
                     </ul>
                     <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
                          <span class="navbar-text me-3">

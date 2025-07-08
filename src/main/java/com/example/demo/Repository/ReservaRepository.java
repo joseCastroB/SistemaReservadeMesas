@@ -1,6 +1,7 @@
 package com.example.demo.Repository;
 
-import com.example.demo.Entities.*;
+import com.example.demo.Entities.Reserva;
+import com.example.demo.Entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -17,8 +18,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer>, JpaS
     Integer countPersonasByFechaAndFranja(LocalDate fecha, Integer idFranja);
     
     // Cuenta cuántas mesas ya se han consumido en una fecha y franja.
-    // Asume que 1-5 personas = 1 mesa, 6-10 = 2 mesas.
-    @Query("SELECT SUM(CASE WHEN r.numeroPersonas <= 5 THEN 1 ELSE 2 END) FROM Reserva r WHERE r.fecha = :fecha AND r.franja.idFranja = :idFranja AND r.estado = 'CONFIRMADA'")
+    // --- CONSULTA CORREGIDA ---
+    // Ahora usa CEILING para calcular correctamente las mesas consumidas.
+    // Se añade 'nativeQuery = true' y se usan nombres de columna SQL (snake_case).
+    @Query(value = "SELECT SUM(CEILING(r.numero_personas / 5.0)) FROM Reserva r WHERE r.fecha = :fecha AND r.id_franja = :idFranja AND r.estado = 'CONFIRMADA'", nativeQuery = true)
     Integer countMesasByFechaAndFranja(LocalDate fecha, Integer idFranja);
 
     // Busca si un usuario ya tiene una reserva para un día específico.
@@ -26,10 +29,22 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer>, JpaS
 
     // --- NUEVO MÉTODO ---
     // Cuenta las mesas reservadas para un TIPO específico en una fecha y franja.
-    @Query("SELECT SUM(CASE WHEN r.numeroPersonas <= 5 THEN 1 ELSE 2 END) FROM Reserva r WHERE r.fecha = :fecha AND r.franja.idFranja = :idFranja AND r.tipoMesa.idTipoMesa = :idTipoMesa AND r.estado = 'CONFIRMADA'")
+    // --- CONSULTA CORREGIDA ---
+    // También se corrige aquí para la disponibilidad por tipo de mesa.
+    // También se corrige aquí.
+    @Query(value = "SELECT SUM(CEILING(r.numero_personas / 5.0)) FROM Reserva r WHERE r.fecha = :fecha AND r.id_franja = :idFranja AND r.id_tipo_mesa = :idTipoMesa AND r.estado = 'CONFIRMADA'", nativeQuery = true)
     Integer countMesasByFechaAndFranjaAndTipoMesa(LocalDate fecha, Integer idFranja, Integer idTipoMesa);
 
     // --- NUEVO MÉTODO ---
     // Busca todas las reservas para una fecha específica.
     List<Reserva> findByFecha(LocalDate fecha);
-}
+
+    // --- NUEVO MÉTODO PARA GRÁFICO DE ESTADO ---
+    @Query("SELECT r.estado, COUNT(r) FROM Reserva r WHERE r.fecha BETWEEN :fechaInicio AND :fechaFin GROUP BY r.estado")
+    List<Object[]> countReservasByEstado(LocalDate fechaInicio, LocalDate fechaFin);
+
+    // --- NUEVO MÉTODO PARA GRÁFICO DE TIPO DE MESA ---
+    @Query("SELECT tm.nombre, COUNT(r) FROM Reserva r JOIN r.tipoMesa tm WHERE r.fecha BETWEEN :fechaInicio AND :fechaFin GROUP BY tm.nombre")
+    List<Object[]> countReservasByTipoMesa(LocalDate fechaInicio, LocalDate fechaFin);
+
+}   

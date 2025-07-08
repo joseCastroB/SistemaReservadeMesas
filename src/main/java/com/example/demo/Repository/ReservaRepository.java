@@ -38,4 +38,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer>, JpaS
     // --- NUEVO MÉTODO ---
     // Busca todas las reservas para una fecha específica.
     List<Reserva> findByFecha(LocalDate fecha);
-}
+
+    // --- NUEVO MÉTODO PARA GRÁFICO DE ESTADO ---
+    @Query("SELECT r.estado, COUNT(r) FROM Reserva r WHERE r.fecha BETWEEN :fechaInicio AND :fechaFin GROUP BY r.estado")
+    List<Object[]> countReservasByEstado(LocalDate fechaInicio, LocalDate fechaFin);
+
+    // --- NUEVO MÉTODO PARA GRÁFICO DE TIPO DE MESA ---
+    @Query("SELECT tm.nombre, COUNT(r) FROM Reserva r JOIN r.tipoMesa tm WHERE r.fecha BETWEEN :fechaInicio AND :fechaFin GROUP BY tm.nombre")
+    List<Object[]> countReservasByTipoMesa(LocalDate fechaInicio, LocalDate fechaFin);
+
+}   

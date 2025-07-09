@@ -1,0 +1,46 @@
+/* ESTILOS ESPECÍFICOS PARA LOGIN.HTML */
+
+/* Estilo general del contenedor del login */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  margin-top: 5rem; /* Separación desde el top */
+  margin-bottom: 4rem;
+}
+
+/* Estilo del card */
+.login-card {
+  width: 100%;
+  max-width: 600px;
+  padding: 6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+}
+
+/* Estilo del título */
+.login-title {
+  color: #1b5e20; /* Verde oscuro */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Estilo del subtítulo */
+.login-subtitle {
+  color: #d32f2f; /* Rojo alerta */
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* Botón */
+.btn-success {
+  background-color: #26802c; /* Verde oscuro */
+  border-color: #287d2e;
+}
+
+.btn-success:hover {
+  background-color: #145a17;
+  border-color: #145a17;
+}

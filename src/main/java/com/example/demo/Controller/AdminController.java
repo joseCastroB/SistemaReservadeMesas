@@ -41,10 +41,10 @@ public class AdminController {
     private final ConfiguracionFranjaRepository franjaRepository;
 
     public AdminController(ReservaService reservaService,
-                            ReporteService reporteService, 
-                            TipoMesaRepository tipoMesaRepository, 
-                            ConfiguracionFranjaRepository franjaRepository, 
-                            ReportExportService exportService) {
+            ReporteService reporteService,
+            TipoMesaRepository tipoMesaRepository,
+            ConfiguracionFranjaRepository franjaRepository,
+            ReportExportService exportService) {
         this.reservaService = reservaService;
         this.reporteService = reporteService;
         this.tipoMesaRepository = tipoMesaRepository;
@@ -53,23 +53,24 @@ public class AdminController {
     }
 
     /**
-     * Muestra la página principal del administrador, cargando las reservas del día actual.
+     * Muestra la página principal del administrador, cargando las reservas del día
+     * actual.
      */
     @GetMapping
     public String mostrarPanelAdmin(Model model) {
         LocalDate hoy = LocalDate.now();
         List<Reserva> reservasDelDia = reservaService.findWithFilters(hoy, null, null, null, null);
-        
+
         model.addAttribute("reservas", reservasDelDia);
         model.addAttribute("fechaSeleccionada", hoy);
-        
+
         // Carga los datos para poblar los dropdowns de los filtros
         model.addAttribute("tiposDeMesa", tipoMesaRepository.findAll());
         model.addAttribute("franjasHorarias", franjaRepository.findAll());
-        
-        return "admin";
+
+        return "admin/admin";
     }
-    
+
     /**
      * API MODIFICADA: Ahora acepta todos los parámetros de filtro.
      */
@@ -83,7 +84,7 @@ public class AdminController {
             @RequestParam(value = "estado", required = false) String estado) {
         return reservaService.findWithFilters(fecha, nombre, idTipoMesa, idFranja, estado);
     }
-    
+
     /**
      * Endpoint para actualizar el estado de una reserva.
      */
@@ -106,14 +107,14 @@ public class AdminController {
         model.addAttribute("tiposDeMesa", tipoMesaRepository.findAll());
         model.addAttribute("fechaMin", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         model.addAttribute("fechaMax", "2025-12-31");
-        return "reservasanonimas"; // Devuelve reservasanonimas.html
+        return "admin/reservasanonimas"; // Devuelve reservasanonimas.html
     }
 
     // --- NUEVO MÉTODO POST: Para crear una reserva anónima ---
     @PostMapping("/reservas-anonimas/crear")
     public String procesarReservaAnonima(@ModelAttribute("reservaForm") ReservaFormDTO formDTO,
-                                          Authentication authentication,
-                                          RedirectAttributes redirectAttributes) {
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
         try {
             // Pasamos el nombre de usuario del admin para registrar quién hizo la reserva
             String adminUsername = authentication.getName();
@@ -122,24 +123,24 @@ public class AdminController {
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al registrar la reserva: " + e.getMessage());
         }
-        
+
         return "redirect:/admin/reservas-anonimas";
     }
 
-     // --- SECCIÓN DE REPORTES ---
+    // --- SECCIÓN DE REPORTES ---
 
     @GetMapping("/reportes")
     public String mostrarPaginaReportes(Model model) {
         LocalDate fin = LocalDate.now();
         LocalDate inicio = fin.withDayOfMonth(1);
         ReporteDTO reporte = reporteService.generarReporte(inicio, fin, null, null);
-        
+
         model.addAttribute("reporte", reporte);
         model.addAttribute("fechaInicio", inicio);
         model.addAttribute("fechaFin", fin);
         model.addAttribute("tiposDeMesa", tipoMesaRepository.findAll());
-        
-        return "reportes";
+
+        return "admin/reportes";
     }
 
     @GetMapping("/api/reportes")
@@ -159,13 +160,13 @@ public class AdminController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) Integer idTipoMesa) throws IOException {
-        
+
         List<Reserva> reservas = reporteService.generarReporte(fechaInicio, fechaFin, estado, idTipoMesa).getReservas();
         ByteArrayInputStream in = exportService.exportarExcel(reservas);
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=reporte_reservas.xlsx");
-        
+
         return ResponseEntity
                 .ok()
                 .headers(headers)
@@ -180,13 +181,13 @@ public class AdminController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) Integer idTipoMesa) {
-        
+
         List<Reserva> reservas = reporteService.generarReporte(fechaInicio, fechaFin, estado, idTipoMesa).getReservas();
         ByteArrayInputStream in = exportService.exportarPdf(reservas);
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=reporte_reservas.pdf");
-        
+
         return ResponseEntity
                 .ok()
                 .headers(headers)

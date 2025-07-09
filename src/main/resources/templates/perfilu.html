@@ -1,136 +1,250 @@
 <!DOCTYPE html>
 <!-- Añadimos los namespaces de Thymeleaf y Spring Security -->
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mi Perfil</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
     <!-- Usamos Thymeleaf para las rutas de los CSS -->
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link rel="stylesheet" th:href="@{/css/perfil.css}" />
-</head>
+  </head>
 
-<body>
-
+  <body>
     <!-- Navbar Actualizado y Dinámico -->
     <header class="top-navbar">
-        <nav class="navbar navbar-expand-lg navbar-light">
-            <div class="container">
-                <a class="navbar-brand" th:href="@{/}">
-                    <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" style="max-height: 50px;"/>
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+          <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/47sopas.png}" alt="Logo Siete Sopas" />
+          </a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbars-rs-food">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbars-rs-food">
+            <ul class="navbar-nav me-auto ms-4">
+              <li class="nav-item">
+                <a class="nav-link" th:href="@{/}">INICIO</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" th:href="@{/menu}">MENU</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" th:href="@{/reservaciones}"
+                  >RESERVACIONES</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" th:href="@{/nosotros}">NOSOTROS</a>
+              </li>
+            </ul>
+
+            <!-- Lógica de Login/Logout a la derecha -->
+            <div class="d-flex align-items-center">
+              <!-- Si el usuario NO está autenticado, muestra el ícono de login -->
+              <div sec:authorize="!isAuthenticated()">
+                <a class="navbar-brand login-icon" th:href="@{/login}">
+                  <img th:src="@{/images/user3.png}" alt="Iniciar Sesión" />
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto ms-4">
-                        <li class="nav-item"><a class="nav-link" th:href="@{/}">INICIO</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/menu}">MENU</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/reservaciones}">RESERVACIONES</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{/nosotros}">NOSOTROS</a></li>
-                        <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link active" th:href="@{/perfil}">PERFIL</a></li>
-                        <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link" th:href="@{/admin}">PANEL ADMIN</a></li>
-                    </ul>
-                    <div class="d-flex align-items-center" sec:authorize="isAuthenticated()">
-                        <span class="navbar-text me-3">
-                           Hola, <strong sec:authentication="name">Usuario</strong>
-                        </span>
-                        <form th:action="@{/logout}" method="post" class="d-inline">
-                            <button class="btn btn-outline-danger btn-sm" type="submit">Cerrar Sesión</button>
-                        </form>
-                    </div>
-                </div>
+              </div>
+
+              <!-- Si el usuario SÍ está autenticado, muestra dropdown de perfil -->
+              <div sec:authorize="isAuthenticated()" class="dropdown">
+                <a
+                  class="navbar-brand login-icon dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <img th:src="@{/images/user3.png}" alt="Perfil de usuario" />
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <h6 class="dropdown-header">
+                      Hola, <span sec:authentication="name">Usuario</span>
+                    </h6>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item" th:href="@{/perfil}">Mi perfil</a>
+                  </li>
+                  <li sec:authorize="hasRole('ADMIN')">
+                    <a class="dropdown-item" th:href="@{/admin}">Panel Admin</a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                      <button class="dropdown-item" type="submit">
+                        Cerrar sesión
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
             </div>
-        </nav>
+          </div>
+        </div>
+      </nav>
     </header>
 
     <!-- Perfil del Usuario -->
     <div class="container profile-container">
-        <div class="row g-4">
-            <!-- Información de Perfil -->
-            <div class="col-md-4">
-                <div class="card text-center shadow-sm">
-                    <div class="card-header">Perfil</div>
-                    <div class="card-body">
-                        <img th:src="@{/images/admin-placeholder.png}" class="rounded-circle mb-3" width="120" height="120" alt="Foto perfil">
-                        <!-- Mostramos el nombre de usuario y el correo dinámicamente -->
-                        <h5 class="card-title" th:text="${usuario.usuario}">Nombre de Usuario</h5>
-                        <p class="card-text" th:text="${usuario.correo}">correo@ejemplo.com</p>
-                    </div>
-                </div>
+      <div class="row g-4">
+        <!-- Información de Perfil -->
+        <div class="col-md-4">
+          <div class="card text-center shadow-sm">
+            <div class="card-header">Perfil</div>
+            <div class="card-body">
+              <img
+                th:src="@{/images/admin-placeholder.png}"
+                class="rounded-circle mb-3"
+                width="120"
+                height="120"
+                alt="Foto perfil" />
+              <!-- Mostramos el nombre de usuario y el correo dinámicamente -->
+              <h5 class="card-title" th:text="${usuario.usuario}">
+                Nombre de Usuario
+              </h5>
+              <p class="card-text" th:text="${usuario.correo}">
+                correo@ejemplo.com
+              </p>
             </div>
-
-            <div class="col-md-8">
-                <!-- Mensajes de éxito/error para DATOS PERSONALES -->
-                <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
-                <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
-
-                <!-- Datos personales -->
-                <div class="card shadow-sm">
-                    <div class="card-header">Datos Personales</div>
-                    <div class="card-body">
-                        <!-- El formulario apunta a la nueva ruta POST y usa el método POST -->
-                        <form id="form-perfil" th:action="@{/perfil/actualizar}" method="post" th:object="${usuario}">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Nombres Completos</label>
-                                    <!-- Añadimos el atributo 'name' para el binding -->
-                                    <input type="text" class="form-control" name="nombreCompleto" th:value="*{nombreCompleto}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Correo</label>
-                                    <input type="email" class="form-control" name="correo" th:value="*{correo}" disabled>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Teléfono</label>
-                                    <input type="text" class="form-control" name="telefono" th:value="*{telefono}">
-                                </div>
-                                <div class="col-12 d-flex justify-content-end mt-3">
-                                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Mensajes de éxito/error para CONTRASEÑA -->
-                <div th:if="${passwordSuccess}" class="alert alert-success mt-4" role="alert" th:text="${passwordSuccess}"></div>
-                <div th:if="${passwordError}" class="alert alert-danger mt-4" role="alert" th:text="${passwordError}"></div>
-
-                <!-- Cambiar contraseña -->
-                <div class="card shadow-sm mt-4">
-                    <div class="card-header">Cambiar Contraseña</div>
-                    <div class="card-body">
-                        <!-- El formulario apunta a la nueva ruta POST -->
-                        <form id="form-password" th:action="@{/perfil/cambiar-contrasena}" method="post">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Contraseña Actual</label>
-                                    <input type="password" class="form-control" name="contrasenaActual" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Nueva Contraseña</label>
-                                    <input type="password" class="form-control" name="nuevaContrasena" required>
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label">Confirmar Nueva Contraseña</label>
-                                    <input type="password" class="form-control" name="confirmarContrasena" required>
-                                </div>
-                                <div class="col-12 d-flex justify-content-end mt-3">
-                                    <button type="submit" class="btn btn-danger">Actualizar Contraseña</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+
+        <div class="col-md-8">
+          <!-- Mensajes de éxito/error para DATOS PERSONALES -->
+          <div
+            th:if="${successMessage}"
+            class="alert alert-success"
+            role="alert"
+            th:text="${successMessage}"></div>
+          <div
+            th:if="${errorMessage}"
+            class="alert alert-danger"
+            role="alert"
+            th:text="${errorMessage}"></div>
+
+          <!-- Datos personales -->
+          <div class="card shadow-sm">
+            <div class="card-header">Datos Personales</div>
+            <div class="card-body">
+              <!-- El formulario apunta a la nueva ruta POST y usa el método POST -->
+              <form
+                id="form-perfil"
+                th:action="@{/perfil/actualizar}"
+                method="post"
+                th:object="${usuario}">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Nombres Completos</label>
+                    <!-- Añadimos el atributo 'name' para el binding -->
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="nombreCompleto"
+                      th:value="*{nombreCompleto}"
+                      required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Correo</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      name="correo"
+                      th:value="*{correo}"
+                      disabled />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Teléfono</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="telefono"
+                      th:value="*{telefono}" />
+                  </div>
+                  <div class="col-12 d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-success">
+                      Guardar Cambios
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Mensajes de éxito/error para CONTRASEÑA -->
+          <div
+            th:if="${passwordSuccess}"
+            class="alert alert-success mt-4"
+            role="alert"
+            th:text="${passwordSuccess}"></div>
+          <div
+            th:if="${passwordError}"
+            class="alert alert-danger mt-4"
+            role="alert"
+            th:text="${passwordError}"></div>
+
+          <!-- Cambiar contraseña -->
+          <div class="card shadow-sm mt-4">
+            <div class="card-header">Cambiar Contraseña</div>
+            <div class="card-body">
+              <!-- El formulario apunta a la nueva ruta POST -->
+              <form
+                id="form-password"
+                th:action="@{/perfil/cambiar-contrasena}"
+                method="post">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Contraseña Actual</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      name="contrasenaActual"
+                      required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      name="nuevaContrasena"
+                      required />
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label">Confirmar Nueva Contraseña</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      name="confirmarContrasena"
+                      required />
+                  </div>
+                  <div class="col-12 d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-danger">
+                      Actualizar Contraseña
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-</body>
+  </body>
 </html>
